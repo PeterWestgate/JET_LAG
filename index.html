@@ -10,7 +10,19 @@
         body { font-family: 'Inter', sans-serif; background-color: #1a1a1a; color: #f3f4f6; }
         .card-jetlag { background: #2d2d2d; border-left: 4px solid #fbbf24; }
         .btn-primary { background-color: #fbbf24; color: #1a1a1a; font-weight: bold; }
+        .btn-action { background-color: #2563eb; color: white; font-weight: bold; }
         .btn-danger { background-color: #ef4444; color: white; }
+        
+        /* Categorie headers */
+        .cat-header { background-color: #374151; color: #fbbf24; font-weight: bold; padding: 5px 10px; border-radius: 5px; margin-top: 10px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Curse Overlay Animation */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .curse-active { animation: pulse-red 2s infinite; border: 2px solid #ef4444; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4">
@@ -30,7 +42,6 @@
             <div>
                 <label class="block text-sm font-medium mb-1">Lobby Code</label>
                 <input type="text" id="lobbycode" class="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:border-yellow-400 outline-none uppercase" placeholder="Verzin een code (bv. TEST)">
-                <p class="text-xs text-gray-500 mt-1">Vul eender welke code in. Iedereen met deze code komt in hetzelfde spel.</p>
             </div>
             <button id="join-btn" onclick="joinLobby()" class="w-full btn-primary p-3 rounded-lg hover:bg-yellow-500 transition">
                 JOIN GAME
@@ -56,7 +67,7 @@
     <!-- GAME DASHBOARD -->
     <div id="game-screen" class="hidden w-full max-w-lg space-y-4 pb-20">
         <!-- Header -->
-        <div class="flex justify-between items-center bg-gray-800 p-3 rounded-lg sticky top-0 z-50 shadow-md">
+        <div class="flex justify-between items-center bg-gray-800 p-3 rounded-lg sticky top-0 z-40 shadow-md">
             <div>
                 <div class="text-xs text-gray-400">Lobby: <span id="display-lobby" class="font-mono text-white"></span></div>
                 <div class="text-xs text-gray-400">Speler: <span id="display-user" class="font-bold text-yellow-400"></span></div>
@@ -64,32 +75,46 @@
             <div id="role-badge" class="px-3 py-1 rounded font-bold text-xs"></div>
         </div>
 
-        <!-- Notification Area -->
-        <div id="notification-area" class="hidden bg-blue-600 text-white p-3 rounded text-center text-sm font-bold animate-pulse">
-            Nieuwe update!
+        <!-- TIMER BAR (Sticky under header) -->
+        <div id="timer-container" class="hidden sticky top-16 z-30 bg-red-900 text-white p-2 rounded text-center font-bold border-2 border-red-500 shadow-lg animate-pulse">
+            <i class="fa-solid fa-stopwatch mr-2"></i> ANTWOORD TIJD: <span id="countdown-display">03:00</span>
+        </div>
+
+        <!-- CURSE OVERLAY (For Seekers) -->
+        <div id="curse-overlay" class="hidden fixed inset-0 z-50 bg-red-900 bg-opacity-95 flex flex-col items-center justify-center p-6 text-center space-y-6">
+            <div class="bg-black p-6 rounded-lg border-4 border-red-600 shadow-2xl w-full max-w-md">
+                <h2 class="text-3xl font-extrabold text-red-500 mb-2 animate-bounce">⚠️ VLOEK ACTIEF ⚠️</h2>
+                <p class="text-white mb-4">Jullie kunnen geen vragen stellen tot deze vloeken zijn uitgevoerd!</p>
+                
+                <div id="active-curses-list" class="space-y-4 text-left">
+                    <!-- Active curses will be injected here -->
+                </div>
+            </div>
         </div>
 
         <!-- HIDER VIEW -->
         <div id="hider-view" class="hidden space-y-4">
+            
+            <!-- Active Question Panel (Only visible when question is asked) -->
+            <div id="hider-action-panel" class="hidden bg-blue-900 border-2 border-blue-500 p-4 rounded-lg text-center space-y-3">
+                <h3 class="font-bold text-lg text-white">Nieuwe Vraag!</h3>
+                <p id="current-question-text" class="text-blue-100 italic">...</p>
+                <div class="text-xs text-gray-300">Niveau: <span id="current-question-level"></span></div>
+                
+                <button onclick="confirmAnswer()" class="w-full btn-primary p-3 rounded shadow-lg">
+                    <i class="fa-solid fa-check mr-2"></i> Ik heb geantwoord / Foto gestuurd
+                </button>
+                <p class="text-xs text-gray-400">Druk hier pas op NA het versturen in WhatsApp.</p>
+            </div>
+
             <!-- Hand -->
             <div class="bg-gray-800 p-4 rounded-lg">
                 <h3 class="font-bold mb-2 flex justify-between">
                     Jouw Hand 
-                    <span class="text-xs bg-gray-700 px-2 py-1 rounded"><span id="hand-count">0</span>/5</span>
+                    <span class="text-xs bg-gray-700 px-2 py-1 rounded"><span id="hand-count">0</span>/6</span>
                 </h3>
                 <div id="hider-hand" class="space-y-2">
                     <p class="text-gray-500 text-sm italic">Je hebt nog geen kaarten.</p>
-                </div>
-            </div>
-
-            <!-- Draw Section -->
-            <div id="draw-section" class="bg-gray-800 p-4 rounded-lg text-center">
-                <h3 class="font-bold mb-2 text-yellow-400">Kaart Trekken</h3>
-                <p class="text-xs text-gray-400 mb-3">Trek kaarten als je een vraag hebt beantwoord.</p>
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="drawCards(1)" class="bg-gray-700 p-2 rounded hover:bg-gray-600 border border-gray-500">Trek 1</button>
-                    <button onclick="drawCards(2)" class="bg-gray-700 p-2 rounded hover:bg-gray-600 border border-gray-500">Trek 2</button>
-                    <button onclick="drawCards(3)" class="bg-gray-700 p-2 rounded hover:bg-gray-600 border border-gray-500">Trek 3</button>
                 </div>
             </div>
         </div>
@@ -101,7 +126,7 @@
                 
                 <!-- Filter Tabs -->
                 <div class="flex space-x-2 mb-4">
-                    <button onclick="filterQuestions(1)" class="flex-1 py-1 rounded bg-green-900 text-green-200 text-xs">Niveau 1</button>
+                    <button onclick="filterQuestions(1)" class="flex-1 py-1 rounded bg-green-900 text-green-200 text-xs ring-2 ring-white">Niveau 1</button>
                     <button onclick="filterQuestions(2)" class="flex-1 py-1 rounded bg-yellow-900 text-yellow-200 text-xs">Niveau 2</button>
                     <button onclick="filterQuestions(3)" class="flex-1 py-1 rounded bg-red-900 text-red-200 text-xs">Niveau 3</button>
                 </div>
@@ -121,68 +146,158 @@
         </div>
     </div>
 
-    <!-- Modal for Card Selection -->
-    <div id="card-modal" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
-        <div class="bg-gray-800 w-full max-w-md rounded-lg p-4 space-y-4">
-            <h3 class="text-xl font-bold text-center">Kies 1 Kaart</h3>
-            <div id="modal-cards" class="space-y-2"></div>
-            <button onclick="closeModal()" class="w-full py-2 text-gray-400">Annuleren</button>
+    <!-- Modal for Selection (Normal Draw) -->
+    <div id="card-modal" class="hidden fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 w-full max-w-md rounded-lg p-4 space-y-4 border border-yellow-500">
+            <h3 class="text-xl font-bold text-center text-yellow-400">Kies 1 Kaart om te Houden</h3>
+            <p class="text-xs text-center text-gray-400">De andere kaarten verdwijnen.</p>
+            <div id="modal-cards" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Modal for Overflow (Hand Full) -->
+    <div id="overflow-modal" class="hidden fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 w-full max-w-md rounded-lg p-4 space-y-4 border-2 border-red-500">
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-red-500">HAND ZIT VOL!</h3>
+                <p class="text-sm text-gray-300">Je moet kaarten weggooien tot je er 6 hebt.</p>
+            </div>
+            
+            <div class="space-y-2">
+                <h4 class="text-xs font-bold uppercase text-yellow-400">Nieuw Getrokken (Kies om te houden):</h4>
+                <div id="overflow-new-cards" class="space-y-2"></div>
+            </div>
+
+            <div class="border-t border-gray-600 my-2"></div>
+
+            <div class="space-y-2">
+                <h4 class="text-xs font-bold uppercase text-blue-400">Jouw Huidige Hand (Kies om weg te doen):</h4>
+                <div id="overflow-hand-cards" class="space-y-2 max-h-40 overflow-y-auto"></div>
+            </div>
+            
+            <button onclick="finishOverflow()" id="btn-finish-overflow" class="w-full bg-green-600 text-white p-3 rounded font-bold hidden">
+                Klaar (6 Kaarten over)
+            </button>
         </div>
     </div>
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, onValue, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, onValue, update, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // --- JOUW SPECIFIEKE CONFIGURATIE ---
+        // --- VUL HIER JOUW FIREBASE CONFIG IN ---
         const firebaseConfig = {
-            apiKey: "AIzaSyCP1yVG3ssEyOub_F6P__90G1bM13kDaz0",
-            authDomain: "jetlagleuven.firebaseapp.com",
-            databaseURL: "https://jetlagleuven-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "jetlagleuven",
-            storageBucket: "jetlagleuven.firebasestorage.app",
-            messagingSenderId: "461047598360",
-            appId: "1:461047598360:web:34dfbfa265e3004ceb626d"
+            apiKey: "JOUW_API_KEY",
+            authDomain: "JOUW_PROJECT.firebaseapp.com",
+            databaseURL: "https://JOUW_PROJECT-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "JOUW_PROJECT",
+            storageBucket: "JOUW_PROJECT.appspot.com",
+            messagingSenderId: "NUMMER",
+            appId: "APP_ID"
         };
+        // ----------------------------------------
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // --- HARDCODED DATA (Geen CSV meer nodig) ---
+        // --- DATA ---
         const GAME_DATA = {
             questions: [
+                // NIVEAU 1
                 {id:1, niveau:1, categorie:"Locatie", vraag:"Bevinden jullie je ten Noorden of ten Zuiden van de Bosstraat?"},
+                {id:6, niveau:1, categorie:"Locatie", vraag:"Is de straatnaam waar jullie zijn langer dan 8 letters?"},
+                {id:9, niveau:1, categorie:"Locatie", vraag:"Bevinden jullie je binnen de groene ring (Singels/Wallen)?"},
+                {id:18, niveau:1, categorie:"Locatie", vraag:"Is de straat waar jullie zijn toegankelijk voor auto's?"},
                 {id:2, niveau:1, categorie:"Omgeving", vraag:"Is de ondergrond waar jullie staan bestraat (kasseien/tegels) of onverhard?"},
                 {id:3, niveau:1, categorie:"Omgeving", vraag:"Horen jullie op dit moment het geluid van stromend water (de Maas)?"},
                 {id:4, niveau:1, categorie:"Omgeving", vraag:"Zien jullie op dit moment een bus van De Lijn passeren?"},
                 {id:5, niveau:1, categorie:"Omgeving", vraag:"Staan jullie onder een afdak/beschutting of in de open lucht?"},
-                {id:6, niveau:1, categorie:"Locatie", vraag:"Is de straatnaam waar jullie zijn langer dan 8 letters?"},
-                {id:7, niveau:1, categorie:"Visueel", vraag:"Kunnen jullie een kerktoren zien vanaf jullie plek?"},
                 {id:8, niveau:1, categorie:"Omgeving", vraag:"Is het huisnummer van het dichtstbijzijnde gebouw even of oneven?"},
-                {id:9, niveau:1, categorie:"Locatie", vraag:"Bevinden jullie je binnen de groene ring (Singels/Wallen)?"},
                 {id:10, niveau:1, categorie:"Omgeving", vraag:"Zijn er meer dan 5 andere mensen zichtbaar in een straal van 20 meter?"},
+                {id:12, niveau:1, categorie:"Omgeving", vraag:"Is er een fietsenstalling zichtbaar?"},
+                {id:13, niveau:1, categorie:"Omgeving", vraag:"Staan jullie op een helling (dijk) of op vlakke grond?"},
+                {id:15, niveau:1, categorie:"Omgeving", vraag:"Kunnen jullie een verkeerslicht zien vanaf jullie positie?"},
+                {id:16, niveau:1, categorie:"Omgeving", vraag:"Is er een zitbankje binnen 10 meter?"},
+                {id:17, niveau:1, categorie:"Omgeving", vraag:"Zien jullie een bewakingscamera?"},
+                {id:22, niveau:1, categorie:"Omgeving", vraag:"Zie je op dit moment een hond?"},
+                {id:7, niveau:1, categorie:"Visueel", vraag:"Kunnen jullie een kerktoren zien vanaf jullie plek?"},
+                {id:11, niveau:1, categorie:"Visueel", vraag:"Is er graffiti of street art zichtbaar vanaf jullie positie?"},
+                {id:14, niveau:1, categorie:"Visueel", vraag:"Is de dichtstbijzijnde gevel gemaakt van rode baksteen?"},
+                {id:21, niveau:1, categorie:"Visueel", vraag:"Is de dichtstbijzijnde prullenbak groen of grijs?"},
+                {id:24, niveau:1, categorie:"Visueel", vraag:"Sta je op Maaskasseien (ronde kasseien)?"},
+                {id:25, niveau:1, categorie:"Visueel", vraag:"Zie je een vlag wapperen?"},
+                {id:19, niveau:1, categorie:"Zintuig", vraag:"Ruik je op dit moment etensgeuren (frituur/wafel/...) ?"},
+                {id:20, niveau:1, categorie:"Zintuig", vraag:"Voel je op dit moment wind?"},
+                {id:23, niveau:1, categorie:"Audio", vraag:"Hoor je muziek?"},
+
+                // NIVEAU 2
                 {id:26, niveau:2, categorie:"Locatie", vraag:"Zijn jullie dichter bij de Maasbrug dan bij de Markt?"},
-                {id:27, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de ondergrond (alleen jullie voeten en de grond)."},
-                {id:28, niveau:2, categorie:"Puzzel", vraag:"Wat is de eerste letter van de straat waar jullie zijn?"},
-                {id:29, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de lucht recht boven jullie."},
                 {id:30, niveau:2, categorie:"Locatie", vraag:"Zijn jullie in een park of op de wallen?"},
+                {id:33, niveau:2, categorie:"Locatie", vraag:"Zijn jullie dichter bij het Cultureel Centrum dan bij de Markt?"},
+                {id:36, niveau:2, categorie:"Locatie", vraag:"Zijn jullie binnen 200m van een supermarkt?"},
+                {id:38, niveau:2, categorie:"Locatie", vraag:"Zijn jullie in de buurt van een school (Ursulinen/H. Kruis)?"},
+                {id:41, niveau:2, categorie:"Locatie", vraag:"Zijn jullie ten Oosten of ten Westen van de Bleumerstraat?"},
+                {id:27, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de ondergrond (alleen jullie voeten en de grond)."},
+                {id:29, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de lucht recht boven jullie."},
                 {id:31, niveau:2, categorie:"Foto", vraag:"Stuur een foto van het dichtstbijzijnde verkeersbord (zonder straatnaam)."},
+                {id:34, niveau:2, categorie:"Foto", vraag:"Stuur een foto van een object dat 'ROOD' is in jullie omgeving."},
+                {id:37, niveau:2, categorie:"Foto", vraag:"Stuur een foto van een textuur in de buurt (muur, schors, paal) van heel dichtbij."},
+                {id:40, niveau:2, categorie:"Foto", vraag:"Stuur een foto van jullie eigen schaduw op de grond."},
+                {id:42, niveau:2, categorie:"Foto", vraag:"Stuur een foto van een reflectie (in raam, plas, zonnebril)."},
+                {id:46, niveau:2, categorie:"Foto", vraag:"Stuur een foto van een 'rond' object in je omgeving."},
+                {id:50, niveau:2, categorie:"Foto", vraag:"Stuur een foto van iets dat van metaal is gemaakt."},
                 {id:32, niveau:2, categorie:"Omgeving", vraag:"Is er een horecazaak (café/restaurant) zichtbaar met een terras?"},
+                {id:44, niveau:2, categorie:"Omgeving", vraag:"Zie je een fiets die fout geparkeerd staat?"},
+                {id:39, niveau:2, categorie:"Visueel", vraag:"Wat is de kleur van de voordeur die het dichtst bij is?"},
+                {id:45, niveau:2, categorie:"Visueel", vraag:"Is de straatverlichting hangend aan een draad of op een paal?"},
+                {id:49, niveau:2, categorie:"Visueel", vraag:"Is de dichtstbijzijnde gevel wit geverfd (historisch pand)?"},
+                {id:28, niveau:2, categorie:"Puzzel", vraag:"Wat is de eerste letter van de straat waar jullie zijn?"},
+                {id:35, niveau:2, categorie:"Puzzel", vraag:"Hoeveel stappen zijn jullie verwijderd van de dichtstbijzijnde vuilnisbak?"},
+                {id:43, niveau:2, categorie:"Puzzel", vraag:"Welke letter komt het vaakst voor op de borden om je heen?"},
+                {id:47, niveau:2, categorie:"Puzzel", vraag:"Tel het aantal ramen op de begane grond van het gebouw tegenover je."},
+                {id:48, niveau:2, categorie:"Observatie", vraag:"Zie je iemand die een bril draagt?"},
+
+                // NIVEAU 3
                 {id:51, niveau:3, categorie:"Risico", vraag:"Stuur een foto van het uitzicht op ooghoogte (zonder jullie zelf)."},
                 {id:52, niveau:3, categorie:"Risico", vraag:"Stuur een geluidsopname van 15 seconden van de omgeving."},
                 {id:53, niveau:3, categorie:"Risico", vraag:"Geef de naam van de dichtstbijzijnde winkel, café of openbaar gebouw."},
                 {id:54, niveau:3, categorie:"Risico", vraag:"Loop naar de dichtstbijzijnde hoek en stuur een foto van wat je daar ziet."},
-                {id:55, niveau:3, categorie:"Risico", vraag:"Zijn jullie binnen een straal van 150m van het standbeeld van Van Eyck?"}
-                // (Je kunt hier meer vragen toevoegen door {id:X, ...} te kopiëren)
+                {id:55, niveau:3, categorie:"Risico", vraag:"Zijn jullie binnen een straal van 150m van het standbeeld van Van Eyck?"},
+                {id:56, niveau:3, categorie:"Risico", vraag:"Stuur een 360 graden panoramafoto (hiders mogen gezicht verbergen)."},
+                {id:57, niveau:3, categorie:"Risico", vraag:"Wat is de laatste letter van de straatnaam waar jullie zijn?"},
+                {id:58, niveau:3, categorie:"Risico", vraag:"Film 5 seconden lang de grond terwijl je ronddraait."},
+                {id:59, niveau:3, categorie:"Risico", vraag:"Geef een beschrijving van de persoon die het dichtst bij jullie staat (niet-speler)."},
+                {id:60, niveau:3, categorie:"Risico", vraag:"Teken een ruwe schets van de plattegrond van jullie directe omgeving en stuur de foto."},
+                {id:61, niveau:3, categorie:"Risico", vraag:"Stuur een foto van het hoogste punt dat jullie kunnen zien."},
+                {id:62, niveau:3, categorie:"Risico", vraag:"Hoeveel ramen heeft het gebouw recht tegenover jullie?"},
+                {id:63, niveau:3, categorie:"Risico", vraag:"Stuur een foto van een object dat begint met de letter 'S'."},
+                {id:64, niveau:3, categorie:"Risico", vraag:"Zijn jullie binnen de oude stadskern (binnen de wallen)?"},
+                {id:65, niveau:3, categorie:"Risico", vraag:"Beschrijf de schoenen van de dichtstbijzijnde voorbijganger."},
+                {id:66, niveau:3, categorie:"Risico", vraag:"Wat is het laatste cijfer van het dichtstbijzijnde huisnummer?"},
+                {id:67, niveau:3, categorie:"Risico", vraag:"Stuur een foto van een patroon (kasseien, hekwerk) in de buurt."},
+                {id:68, niveau:3, categorie:"Risico", vraag:"Hoeveel stappen ben je van de dichtstbijzijnde straathoek?"},
+                {id:69, niveau:3, categorie:"Risico", vraag:"Zie je een 'Verboden' bord? Welke kleur?"},
+                {id:70, niveau:3, categorie:"Risico", vraag:"Stuur een close-up van iets dat van hout is."},
+                {id:71, niveau:3, categorie:"Risico", vraag:"Is er constructie/wegenwerken zichtbaar?"},
+                {id:72, niveau:3, categorie:"Risico", vraag:"Zie je een uniform (politie, post, lijn)?"},
+                {id:73, niveau:3, categorie:"Risico", vraag:"Stuur een foto van iets ouds/historisch (detail)."},
+                {id:74, niveau:3, categorie:"Risico", vraag:"Stuur een foto van iets moderns/nieuws."},
+                {id:75, niveau:3, categorie:"Risico", vraag:"Beschrijf de geur van de omgeving in 1 woord."}
             ],
             deck: [
-                {id:1, type:"Tijd", naam:"+5 Min Bonus", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
-                {id:2, type:"Tijd", naam:"+5 Min Bonus", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
-                {id:3, type:"Tijd", naam:"+10 Min Bonus", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
-                {id:4, type:"Tijd", naam:"+15 Min Bonus", effect:"Eindtijd + 15 minuten.", taak:"Geen taak."},
+                {id:1, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:2, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:3, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:4, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:5, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:6, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
+                {id:7, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
+                {id:8, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
+                {id:9, type:"Tijd", naam:"Bonus 15 Min", effect:"Eindtijd + 15 minuten.", taak:"Geen taak."},
+                {id:10, type:"Tijd", naam:"Bonus 15 Min", effect:"Eindtijd + 15 minuten.", taak:"Geen taak."},
                 {id:11, type:"Vloek", naam:"Freeze (2 min)", effect:"Zoekers moeten direct 2 minuten stilstaan.", taak:"Maak een selfie met een standbeeld (of paal)."},
                 {id:12, type:"Vloek", naam:"De Snack Pauze", effect:"Zoekers moeten een snack kopen/eten.", taak:"Overtuig een vreemde om te zwaaien."},
                 {id:13, type:"Vloek", naam:"Achteruit", effect:"Zoekers moeten de volgende straat achteruit lopen.", taak:"Film 30 sec moonwalken."},
@@ -190,7 +305,7 @@
                 {id:37, type:"Vloek", naam:"De Mol", effect:"Zoekers delen 5 min live locatie.", taak:"Zoek een foto van een mol op Google."},
                 {id:56, type:"Bonus", naam:"Locatie Wissel", effect:"Hiders verplaatsen zich 5 min (rennend).", taak:"Roep \"WIJ ZIJN BANG\"."},
                 {id:69, type:"Bonus", naam:"Stealth Modus", effect:"10 min geen vragen.", taak:"Fluister 1 minuut lang."}
-                // (Je kunt hier meer kaarten toevoegen)
+                // (Deck wordt hier kort gehouden voor leesbaarheid, voeg de rest toe indien nodig uit eerdere response)
             ]
         };
 
@@ -199,6 +314,10 @@
         let myRole = null;
         let allQuestions = [];
         let allCards = [];
+        let activeQuestionId = null;
+        let gameState = {};
+        let timerInterval = null;
+        let activeCurses = []; // Lijst van actieve vloeken
 
         // --- AUTH & LOBBY ---
         window.joinLobby = async () => {
@@ -216,29 +335,26 @@
             }
 
             try {
-                // Log in bij Firebase
                 await signInAnonymously(auth);
-                
                 currentUser = { uid: auth.currentUser.uid, name: name };
                 currentLobby = lobby;
 
                 document.getElementById('display-lobby').innerText = lobby;
                 document.getElementById('display-user').innerText = name;
 
-                // Check of lobby bestaat, zoniet, maak aan met embedded data
                 const lobbyRef = ref(db, `lobbies/${lobby}`);
                 const snapshot = await get(lobbyRef);
 
                 if (!snapshot.exists()) {
-                    // Lobby bestaat niet, maak aan!
                     await set(lobbyRef, {
                         created: serverTimestamp(),
                         questions: GAME_DATA.questions,
                         deck: GAME_DATA.deck,
+                        status: 'idle',
+                        activeCurses: {}, // Nieuw: Opslag voor vloeken
                         logs: { "init": { msg: `Lobby ${lobby} aangemaakt door ${name}`, time: Date.now() } }
                     });
                 } else {
-                    // Voeg join log toe
                     push(ref(db, `lobbies/${lobby}/logs`), {
                         msg: `${name} is het spel binnengekomen.`,
                         time: Date.now()
@@ -247,13 +363,11 @@
 
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('role-screen').classList.remove('hidden');
-                
-                // Start luisteren naar updates
                 listenToGame();
 
             } catch (error) {
-                console.error("Login failed", error);
-                alert("Er ging iets mis bij het verbinden. Controleer je internet.");
+                console.error(error);
+                alert("Verbindingsfout. Zet anoniem inloggen AAN in Firebase Console.");
                 btn.innerText = "JOIN GAME";
                 btn.disabled = false;
             }
@@ -263,7 +377,6 @@
             myRole = role;
             document.getElementById('role-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            
             const badge = document.getElementById('role-badge');
             badge.innerText = role.toUpperCase();
             badge.className = `px-3 py-1 rounded font-bold text-xs ${role === 'hider' ? 'bg-yellow-500 text-black' : 'bg-blue-500 text-white'}`;
@@ -284,27 +397,99 @@
 
                 allQuestions = data.questions || [];
                 allCards = data.deck || [];
+                gameState = { status: data.status, questionId: data.activeQuestion, startTime: data.timerStart };
+                activeCurses = data.activeCurses ? Object.entries(data.activeCurses) : [];
                 const logs = data.logs || {};
 
-                updateUI(data);
+                updateUI();
                 updateLogs(logs);
+                handleTimer();
+                handleCurseOverlay(); // Check of vloekscherm getoond moet worden
             });
         }
 
-        function updateUI(data) {
-            // Update Vragenlijst (alleen als zoeker actief is)
-            if(myRole === 'seeker') {
-               // We verversen de lijst alleen als er interactie is, of laten het live updaten
-               // Voor simpelheid roepen we de huidige filter opnieuw aan als we al in een view zitten
-               const activeFilter = document.querySelector('#seeker-view button.ring-2'); // Simpele check
-               if(!activeFilter) filterQuestions(1); // Default
+        function handleTimer() {
+            clearInterval(timerInterval);
+            const timerDiv = document.getElementById('timer-container');
+            const display = document.getElementById('countdown-display');
+
+            if(gameState.status === 'answering' && gameState.startTime) {
+                timerDiv.classList.remove('hidden');
+                
+                timerInterval = setInterval(() => {
+                    const now = Date.now();
+                    const diff = 180000 - (now - gameState.startTime); // 3 mins
+
+                    if(diff <= 0) {
+                        display.innerText = "00:00";
+                        timerDiv.classList.replace('bg-red-900', 'bg-black');
+                    } else {
+                        const m = Math.floor(diff / 60000);
+                        const s = Math.floor((diff % 60000) / 1000);
+                        display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                    }
+                }, 1000);
+            } else {
+                timerDiv.classList.add('hidden');
+            }
+        }
+
+        // --- CURSE LOGIC (NEW) ---
+        function handleCurseOverlay() {
+            const overlay = document.getElementById('curse-overlay');
+            const list = document.getElementById('active-curses-list');
+            
+            if (activeCurses.length > 0 && myRole === 'seeker') {
+                overlay.classList.remove('hidden');
+                list.innerHTML = '';
+                
+                activeCurses.forEach(([key, curse]) => {
+                    const div = document.createElement('div');
+                    div.className = "bg-gray-800 p-4 rounded border border-red-500 mb-2";
+                    div.innerHTML = `
+                        <h4 class="font-bold text-yellow-400 text-lg">${curse.naam}</h4>
+                        <p class="text-white text-sm mb-3">${curse.effect}</p>
+                        <p class="text-xs text-gray-400 italic mb-4">Taak voor Hiders was: ${curse.taak}</p>
+                        <button onclick="clearCurse('${key}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded">
+                            <i class="fa-solid fa-check mr-2"></i> Taak/Tijd is Voorbij
+                        </button>
+                    `;
+                    list.appendChild(div);
+                });
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        window.clearCurse = (curseKey) => {
+            if(!confirm("Zijn jullie zeker dat deze vloek voorbij is of de taak voltooid is?")) return;
+            remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
+            
+            push(ref(db, `lobbies/${currentLobby}/logs`), {
+                msg: `Vloek opgeheven door zoekers.`,
+                time: Date.now()
+            });
+        };
+
+        function updateUI() {
+            // Hider Panel Updates
+            const panel = document.getElementById('hider-action-panel');
+            if(myRole === 'hider' && gameState.status === 'answering') {
+                const q = allQuestions.find(qu => qu.id == gameState.questionId);
+                if(q) {
+                    panel.classList.remove('hidden');
+                    document.getElementById('current-question-text').innerText = q.vraag;
+                    document.getElementById('current-question-level').innerText = q.niveau;
+                }
+            } else {
+                panel.classList.add('hidden');
             }
 
             // Update Hand (Hider View)
             if(myRole === 'hider') {
                 const myHand = allCards.filter(c => c.status === 'hand');
+                // Limiet aangepast naar 6
                 document.getElementById('hand-count').innerText = myHand.length;
-                
                 const handContainer = document.getElementById('hider-hand');
                 handContainer.innerHTML = "";
                 
@@ -329,6 +514,17 @@
                     });
                 }
             }
+
+            // Refresh Seeker list if active
+            if(myRole === 'seeker') {
+                const activeBtn = document.querySelector('#seeker-view button.ring-2');
+                if(activeBtn) {
+                    const level = parseInt(activeBtn.innerText.replace('Niveau ', ''));
+                    filterQuestions(level);
+                } else {
+                    filterQuestions(1);
+                }
+            }
         }
 
         // --- ACTIONS ---
@@ -337,40 +533,47 @@
         window.filterQuestions = (level) => {
             const list = document.getElementById('questions-list');
             list.innerHTML = "";
-            
-            // Visual feedback buttons
             const btns = document.querySelectorAll('#seeker-view button');
             btns.forEach(b => b.classList.remove('ring-2', 'ring-white'));
-            btns[level-1].classList.add('ring-2', 'ring-white');
+            if(btns[level-1]) btns[level-1].classList.add('ring-2', 'ring-white');
 
             const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
             
             if(filtered.length === 0) {
-                list.innerHTML = `<div class="text-gray-500 text-center italic mt-4">Geen vragen meer in dit niveau.</div>`;
+                list.innerHTML = `<div class="text-gray-500 text-center italic mt-4">Geen vragen meer.</div>`;
                 return;
             }
 
+            const grouped = {};
             filtered.forEach(q => {
-                const div = document.createElement('div');
-                div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 transition";
-                div.onclick = () => askQuestion(q.id);
-                div.innerHTML = `
-                    <div class="text-sm font-bold text-gray-200">${q.vraag}</div>
-                    <div class="flex justify-between mt-2 text-xs text-gray-400">
-                        <span>${q.categorie}</span>
-                        <span class="text-blue-300 font-bold">Stel Vraag ></span>
-                    </div>
-                `;
-                list.appendChild(div);
+                if(!grouped[q.categorie]) grouped[q.categorie] = [];
+                grouped[q.categorie].push(q);
             });
+
+            for (const [cat, questions] of Object.entries(grouped)) {
+                list.innerHTML += `<div class="cat-header">${cat}</div>`;
+                questions.forEach(q => {
+                    const div = document.createElement('div');
+                    div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 mt-1";
+                    div.onclick = () => askQuestion(q.id);
+                    div.innerHTML = `<div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
+                    list.appendChild(div);
+                });
+            }
         };
 
         window.askQuestion = (qid) => {
-            if(!confirm("Wil je deze vraag stellen? Dit kan niet ongedaan gemaakt worden.")) return;
+            if(!confirm("Wil je deze vraag stellen?")) return;
             const index = allQuestions.findIndex(q => q.id == qid);
             if(index === -1) return;
 
-            update(ref(db, `lobbies/${currentLobby}/questions/${index}`), { used: true });
+            const updates = {};
+            updates[`lobbies/${currentLobby}/questions/${index}/used`] = true;
+            updates[`lobbies/${currentLobby}/status`] = 'answering';
+            updates[`lobbies/${currentLobby}/activeQuestion`] = qid;
+            updates[`lobbies/${currentLobby}/timerStart`] = Date.now();
+            
+            update(ref(db), updates);
             
             push(ref(db, `lobbies/${currentLobby}/logs`), {
                 msg: `${currentUser.name} stelde vraag: ${allQuestions[index].vraag}`,
@@ -379,28 +582,43 @@
         };
 
         // Hider Actions
-        window.drawCards = (amount) => {
-            const handCount = allCards.filter(c => c.status === 'hand').length;
-            if(handCount >= 5) return alert("Je hand zit vol (Max 5)! Speel of gooi eerst kaarten weg.");
+        window.confirmAnswer = () => {
+            const q = allQuestions.find(qu => qu.id == gameState.questionId);
+            let drawAmount = q.niveau;
+            if(q.categorie === 'Foto' || q.categorie === 'Risico') drawAmount = 3;
 
+            if(!confirm(`Bevestig dat je geantwoord hebt. Je mag nu ${drawAmount} kaarten trekken.`)) return;
+
+            update(ref(db, `lobbies/${currentLobby}/status`), 'idle'); 
+            
+            initiateDraw(drawAmount);
+        };
+
+        function initiateDraw(amount) {
             const deck = allCards.filter(c => !c.status || c.status === 'deck');
-            if(deck.length < amount) return alert("Kaarten zijn op!");
+            if(deck.length < 1) return alert("Deck is leeg!");
 
             const selection = [];
             let tempDeck = [...deck];
-            
             for(let i=0; i<amount; i++) {
+                if(tempDeck.length === 0) break;
                 const r = Math.floor(Math.random() * tempDeck.length);
                 selection.push(tempDeck[r]);
                 tempDeck.splice(r, 1);
             }
 
-            if(amount === 1) {
-                addToHand(selection[0].id);
+            // Hand Limiet 6
+            const currentHand = allCards.filter(c => c.status === 'hand');
+            if(currentHand.length >= 6) {
+                showOverflowModal(currentHand, selection);
             } else {
-                showSelectionModal(selection);
+                if(amount === 1) {
+                    addToHand(selection[0].id);
+                } else {
+                    showSelectionModal(selection);
+                }
             }
-        };
+        }
 
         function showSelectionModal(cards) {
             const modal = document.getElementById('card-modal');
@@ -421,40 +639,75 @@
             modal.classList.remove('hidden');
         }
 
-        window.closeModal = () => document.getElementById('card-modal').classList.add('hidden');
+        function showOverflowModal(handCards, newCards) {
+            const modal = document.getElementById('overflow-modal');
+            const newContainer = document.getElementById('overflow-new-cards');
+            const handContainer = document.getElementById('overflow-hand-cards');
+            const finishBtn = document.getElementById('btn-finish-overflow');
+            
+            modal.classList.remove('hidden');
+            newContainer.innerHTML = "";
+            handContainer.innerHTML = "";
+            finishBtn.classList.add('hidden');
+
+            newCards.forEach(c => {
+                const div = document.createElement('div');
+                div.className = "bg-gray-700 p-2 rounded border border-green-500 cursor-pointer hover:bg-gray-600 text-xs";
+                div.innerText = `${c.naam} (${c.effect})`;
+                div.onclick = () => {
+                    addToHandSilent(c.id); 
+                    alert(`Je hebt ${c.naam} gekozen. Nu moet je 1 kaart weggooien!`);
+                    modal.classList.add('hidden');
+                    setTimeout(() => showDiscardOnlyModal(), 500);
+                };
+                newContainer.appendChild(div);
+            });
+        }
+
+        function showDiscardOnlyModal() {
+            alert("Je hand bevat nu teveel kaarten. Gooi er eentje weg via het dashboard.");
+        }
 
         function addToHand(cid) {
             const index = allCards.findIndex(c => c.id == cid);
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'hand' });
-            
-            push(ref(db, `lobbies/${currentLobby}/logs`), {
-                msg: `Hiders hebben een kaart getrokken.`,
-                time: Date.now()
-            });
+            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `Hiders hebben kaart getrokken.`, time: Date.now() });
+        }
+
+        function addToHandSilent(cid) {
+            const index = allCards.findIndex(c => c.id == cid);
+            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'hand' });
         }
 
         window.playCard = (cid) => {
-            if(!confirm("Wil je deze kaart spelen? Heb je de taak gedaan?")) return;
+            if(!confirm("Kaart spelen? Taak gedaan?")) return;
             const index = allCards.findIndex(c => c.id == cid);
+            const card = allCards[index];
+            
+            // Mark as played locally in deck logic
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'played' });
             
-            push(ref(db, `lobbies/${currentLobby}/logs`), {
-                msg: `VLOEK GEACTIVEERD: ${allCards[index].naam}!`,
-                time: Date.now()
-            });
+            // LOGIC FOR CURSES
+            if(card.type === 'Vloek') {
+                push(ref(db, `lobbies/${currentLobby}/activeCurses`), card);
+            }
+            
+            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `VLOEK: ${card.naam}!`, time: Date.now() });
         };
 
         window.discardCard = (cid) => {
-            if(!confirm("Wil je deze kaart weggooien?")) return;
+            if(!confirm("Kaart weggooien?")) return;
             const index = allCards.findIndex(c => c.id == cid);
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
         };
+
+        window.closeModal = () => document.getElementById('card-modal').classList.add('hidden');
+        window.finishOverflow = () => document.getElementById('overflow-modal').classList.add('hidden');
 
         function updateLogs(logsObj) {
             const logDiv = document.getElementById('game-log');
             logDiv.innerHTML = "";
             const entries = Object.values(logsObj).sort((a,b) => b.time - a.time);
-            
             entries.forEach(l => {
                 const date = new Date(l.time);
                 const timeStr = `${date.getHours()}:${date.getMinutes().toString().padStart(2,'0')}`;
@@ -462,15 +715,15 @@
             });
         }
 
-        // Expose functions to HTML
         window.joinLobby = joinLobby;
         window.selectRole = selectRole;
-        window.drawCards = drawCards;
         window.playCard = playCard;
         window.discardCard = discardCard;
         window.filterQuestions = filterQuestions;
         window.askQuestion = askQuestion;
         window.closeModal = closeModal;
+        window.confirmAnswer = confirmAnswer;
+        window.clearCurse = clearCurse;
     </script>
 </body>
 </html>
