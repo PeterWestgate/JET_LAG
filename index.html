@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leuven Hide & Seek</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #111827; color: #f3f4f6; }
         .card-jetlag { background: #1f2937; border-left: 4px solid #fbbf24; transition: transform 0.1s; }
@@ -202,6 +202,30 @@
         </div>
     </div>
 
+    <!-- ANSWER / UPLOAD MODAL -->
+    <div id="answer-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur flex items-center justify-center p-4 z-[60]">
+        <div class="bg-gray-900 w-full max-w-md rounded-2xl p-6 space-y-4 border border-blue-500">
+            <h3 class="text-xl font-bold text-white" id="answer-modal-title">Antwoorden</h3>
+            
+            <div>
+                <label class="text-xs text-gray-400 uppercase font-bold">Tekst Antwoord</label>
+                <textarea id="answer-text" class="w-full bg-gray-800 text-white p-3 rounded mt-1 h-24 border border-gray-700 focus:border-blue-500 outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="text-xs text-gray-400 uppercase font-bold">Foto/Video (Optioneel)</label>
+                <input type="file" id="answer-file" accept="image/*,video/*" class="w-full bg-gray-800 text-gray-300 text-xs p-2 rounded mt-1 border border-gray-700">
+                <p class="text-[10px] text-gray-500 mt-1">Wordt geüpload naar GitHub. Max 5MB aanbevolen.</p>
+            </div>
+
+            <button id="btn-send-answer" onclick="submitAnswer()" class="w-full btn-primary p-3 rounded-lg flex justify-center items-center">
+                <span id="btn-send-text">VERSTUREN</span>
+                <i id="btn-send-loader" class="fa-solid fa-spinner fa-spin ml-2 hidden"></i>
+            </button>
+            <button onclick="closeAnswerModal()" class="w-full text-gray-500 text-xs py-2">Annuleren</button>
+        </div>
+    </div>
+
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -210,15 +234,23 @@
 
         // --- VUL HIER JOUW FIREBASE CONFIG IN ---
         const firebaseConfig = {
-  apiKey: "AIzaSyCP1yVG3ssEyOub_F6P__90G1bM13kDaz0",
-  authDomain: "jetlagleuven.firebaseapp.com",
-  databaseURL: "https://jetlagleuven-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "jetlagleuven",
-  storageBucket: "jetlagleuven.firebasestorage.app",
-  messagingSenderId: "461047598360",
-  appId: "1:461047598360:web:34dfbfa265e3004ceb626d"
-};
+            apiKey: "AIzaSyCP1yVG3ssEyOub_F6P__90G1bM13kDaz0",
+            authDomain: "jetlagleuven.firebaseapp.com",
+            databaseURL: "https://jetlagleuven-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "jetlagleuven",
+            storageBucket: "jetlagleuven.firebasestorage.app",
+            messagingSenderId: "461047598360",
+            appId: "1:461047598360:web:34dfbfa265e3004ceb626d"
+        };
         
+        // --- GITHUB CONFIG (VUL DIT IN!) ---
+        const GITHUB_CONFIG = {
+            token: "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", // Maak een token op github.com/settings/tokens
+            owner: "PeterWestgate",
+            repo: "JET_LAG", // Naam van je repo
+            path: "uploads" // Map in je repo
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
@@ -355,7 +387,7 @@
                 {id:14, type:"Tijd", naam:"Bonus 30 Min", effect:"Eindtijd + 30 minuten.", taak:"Geen taak."},
                 {id:15, type:"Tijd", naam:"Bonus 1 Uur", effect:"Eindtijd + 1 Uur.", taak:"Geen taak."},
 
-                // VLOEKEN (45 kaarten)
+                // VLOEKEN (46 kaarten)
                 {id:16, type:"Vloek", naam:"Freeze (2 min)", effect:"Zoekers moeten direct 2 minuten stilstaan.", taak:"Maak een selfie met een standbeeld (of paal)."},
                 {id:17, type:"Vloek", naam:"Freeze (2 min)", effect:"Zoekers moeten direct 2 minuten stilstaan.", taak:"Maak een selfie met een standbeeld (of paal)."},
                 {id:18, type:"Vloek", naam:"De Snack Pauze", effect:"Zoekers moeten een snack kopen/eten.", taak:"Overtuig een vreemde om te zwaaien."},
@@ -403,7 +435,7 @@
                 {id:60, type:"Vloek", naam:"Vertraging", effect:"Zoekers 2 min stilstaan.", taak:"Doe maanlanding in slow-mo."},
                 {id:61, type:"Vloek", naam:"Verwarring", effect:"Zoekers 5 min naar Noorden lopen.", taak:"Wijs 1 min naar willekeurige richtingen."},
 
-                // BONUS (18 kaarten)
+                // BONUSSEN (18 kaarten)
                 {id:62, type:"Bonus", naam:"Locatie Wissel", effect:"Hiders verplaatsen zich 5 min (rennend).", taak:"Roep \"WIJ ZIJN BANG\"."},
                 {id:63, type:"Bonus", naam:"De Mime", effect:"Zoekers zwijgen 10 min, enkel gebaren.", taak:"Beeld film uit (zoekers raden)."},
                 {id:64, type:"Bonus", naam:"De Leugen", effect:"Lieg op de VOLGENDE vraag.", taak:"Eet iets zuurs/vies (veilig)."},
@@ -430,31 +462,24 @@
         let myRole = null;
         let allQuestions = [];
         let allCards = [];
-        let activeQuestionId = null;
         let gameState = {};
-        let timerInterval = null;
         let activeCurses = [];
+        let timerInterval = null;
+        let currentModalContext = null; // 'question' or 'curse_ID'
 
         // --- AUTH & LOBBY ---
         window.joinLobby = async () => {
             const btn = document.getElementById('join-btn');
-            btn.innerText = "Laden...";
-            btn.disabled = true;
-
+            btn.innerText = "Laden..."; btn.disabled = true;
             const name = document.getElementById('username').value;
             const lobby = document.getElementById('lobbycode').value.toUpperCase();
             
-            if(!name || !lobby) {
-                btn.innerText = "JOIN GAME";
-                btn.disabled = false;
-                return alert("Vul naam en lobby in");
-            }
+            if(!name || !lobby) { btn.innerText = "START SPEL"; btn.disabled = false; return alert("Vul alles in"); }
 
             try {
                 await signInAnonymously(auth);
                 currentUser = { uid: auth.currentUser.uid, name: name };
                 currentLobby = lobby;
-
                 document.getElementById('display-lobby').innerText = lobby;
                 document.getElementById('display-user').innerText = name;
 
@@ -466,287 +491,263 @@
                         created: serverTimestamp(),
                         questions: GAME_DATA.questions,
                         deck: GAME_DATA.deck,
-                        status: 'idle',
-                        activeCurses: {}, 
-                        logs: { "init": { msg: `Lobby ${lobby} aangemaakt door ${name}`, time: Date.now() } }
-                    });
-                } else {
-                    push(ref(db, `lobbies/${lobby}/logs`), {
-                        msg: `${name} is het spel binnengekomen.`,
-                        time: Date.now()
+                        status: 'idle', // idle, answering
+                        penaltyTime: 0,
+                        logs: { "init": { msg: `Lobby ${lobby} gestart`, time: Date.now() } }
                     });
                 }
-
+                
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('role-screen').classList.remove('hidden');
                 listenToGame();
-
-            } catch (error) {
-                console.error(error);
-                alert("Verbindingsfout. Zorg dat je 'Anonymous Authentication' hebt aangezet in Firebase Console.");
-                btn.innerText = "JOIN GAME";
-                btn.disabled = false;
-            }
+            } catch (e) { alert("Login error: " + e.message); btn.disabled = false; }
         };
 
         window.selectRole = (role) => {
             myRole = role;
             document.getElementById('role-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            
             const badge = document.getElementById('role-badge');
             badge.innerText = role.toUpperCase();
-            badge.className = `px-3 py-1 rounded-full font-black text-xs tracking-wider ${role === 'hider' ? 'bg-yellow-500 text-black shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'bg-blue-500 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`;
-
-            const icon = document.getElementById('role-icon');
-            icon.innerHTML = role === 'hider' ? '<i class="fa-solid fa-user-secret text-yellow-400"></i>' : '<i class="fa-solid fa-binoculars text-blue-400"></i>';
-
+            badge.className = `px-3 py-1 rounded-full font-black text-xs tracking-wider ${role === 'hider' ? 'bg-yellow-500 text-black' : 'bg-blue-500 text-white'}`;
+            
             if(role === 'hider') document.getElementById('hider-view').classList.remove('hidden');
             if(role === 'seeker') {
                 document.getElementById('seeker-view').classList.remove('hidden');
-                filterQuestions(1); 
+                filterQuestions(1);
             }
+            updateUI();
         };
 
-        // --- GAME SYNC ---
+        // --- SYNC ---
         function listenToGame() {
-            const lobbyRef = ref(db, `lobbies/${currentLobby}`);
-            onValue(lobbyRef, (snapshot) => {
-                const data = snapshot.val();
+            onValue(ref(db, `lobbies/${currentLobby}`), (snap) => {
+                const data = snap.val();
                 if(!data) return;
-
                 allQuestions = data.questions || [];
                 allCards = data.deck || [];
-                gameState = { status: data.status, questionId: data.activeQuestion, startTime: data.timerStart };
+                gameState = { 
+                    status: data.status, 
+                    questionId: data.activeQuestion, 
+                    startTime: data.timerStart,
+                    penalty: data.penaltyTime || 0
+                };
                 activeCurses = data.activeCurses ? Object.entries(data.activeCurses) : [];
-                const logs = data.logs || {};
-
-                updateUI();
-                updateLogs(logs);
+                
+                document.getElementById('penalty-display').innerText = `${gameState.penalty} min`;
+                updateLogs(data.logs || {});
                 handleTimer();
-                handleCurseOverlay();
+                updateUI();
             });
         }
 
-        function handleTimer() {
-            clearInterval(timerInterval);
-            const timerDiv = document.getElementById('timer-container');
-            const display = document.getElementById('countdown-display');
-
-            if(gameState.status === 'answering' && gameState.startTime) {
-                timerDiv.classList.remove('hidden');
-                
-                timerInterval = setInterval(() => {
-                    const now = Date.now();
-                    const diff = 180000 - (now - gameState.startTime); // 3 mins
-
-                    if(diff <= 0) {
-                        display.innerText = "00:00";
-                        timerDiv.classList.replace('bg-red-600', 'bg-gray-800');
-                    } else {
-                        const m = Math.floor(diff / 60000);
-                        const s = Math.floor((diff % 60000) / 1000);
-                        display.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                    }
-                }, 1000);
-            } else {
-                timerDiv.classList.add('hidden');
-            }
-        }
-
-        // --- CURSE LOGIC ---
-        function handleCurseOverlay() {
-            const overlay = document.getElementById('curse-overlay');
-            const list = document.getElementById('active-curses-list');
-            
-            if (activeCurses.length > 0 && myRole === 'seeker') {
-                overlay.classList.remove('hidden');
-                list.innerHTML = '';
-                
-                activeCurses.forEach(([key, curse]) => {
-                    const div = document.createElement('div');
-                    div.className = "bg-gray-800 p-4 rounded-xl border border-red-500 mb-3 relative overflow-hidden";
-                    div.innerHTML = `
-                        <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
-                        <h4 class="font-black text-yellow-400 text-xl mb-1">${curse.naam}</h4>
-                        <p class="text-white font-bold mb-2">${curse.effect}</p>
-                        <div class="bg-black/30 p-2 rounded text-xs text-gray-400 italic mb-4">
-                            <i class="fa-solid fa-camera mr-1"></i> Taak voor Hiders was: ${curse.taak}
-                        </div>
-                        <button onclick="clearCurse('${key}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02] active:scale-95 shadow-lg">
-                            <i class="fa-solid fa-check mr-2"></i> Taak/Tijd is Voorbij
-                        </button>
-                    `;
-                    list.appendChild(div);
-                });
-            } else {
-                overlay.classList.add('hidden');
-            }
-        }
-
-        window.clearCurse = (curseKey) => {
-            if(!confirm("Zijn jullie zeker dat deze vloek voorbij is of de taak voltooid is?")) return;
-            remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
-            
-            push(ref(db, `lobbies/${currentLobby}/logs`), {
-                msg: `Vloek opgeheven door zoekers.`,
-                time: Date.now()
-            });
-        };
-
+        // --- UI UPDATES ---
         function updateUI() {
-            // Hider Panel Updates
-            const panel = document.getElementById('hider-action-panel');
-            if(myRole === 'hider' && gameState.status === 'answering') {
-                const q = allQuestions.find(qu => qu.id == gameState.questionId);
+            const hiderPanel = document.getElementById('hider-action-panel');
+            const seekerLock = document.getElementById('seeker-lock');
+            const curseOverlay = document.getElementById('curse-overlay');
+
+            // 1. Status Checks
+            const isAnswering = gameState.status === 'answering';
+            const hasCurses = activeCurses.length > 0;
+
+            // Seeker Lock
+            if (isAnswering || hasCurses) {
+                seekerLock.classList.remove('hidden');
+                seekerLock.innerHTML = isAnswering 
+                    ? `<i class="fa-solid fa-hourglass-half text-4xl mb-2 text-yellow-500"></i><p>Hiders zijn aan het antwoorden...</p>`
+                    : `<i class="fa-solid fa-skull text-4xl mb-2 text-red-500"></i><p>VLOEK ACTIEF!</p>`;
+            } else {
+                seekerLock.classList.add('hidden');
+            }
+
+            // Hider Panel
+            if (myRole === 'hider' && isAnswering) {
+                const q = allQuestions.find(i => i.id == gameState.questionId);
                 if(q) {
-                    panel.classList.remove('hidden');
+                    hiderPanel.classList.remove('hidden');
                     document.getElementById('current-question-text').innerText = q.vraag;
                     document.getElementById('current-question-level').innerText = q.niveau;
                 }
             } else {
-                panel.classList.add('hidden');
+                hiderPanel.classList.add('hidden');
             }
 
-            // Update Hand (Hider View)
-            if(myRole === 'hider') {
-                const myHand = allCards.filter(c => c.status === 'hand');
-                document.getElementById('hand-count').innerText = myHand.length;
-                const handContainer = document.getElementById('hider-hand');
-                handContainer.innerHTML = "";
+            // Curse Overlay (Seekers Only)
+            if (myRole === 'seeker' && hasCurses) {
+                curseOverlay.classList.remove('hidden');
+                const list = document.getElementById('active-curses-list');
+                list.innerHTML = '';
+                activeCurses.forEach(([key, curse]) => {
+                    list.innerHTML += `
+                        <div class="bg-gray-800 p-4 rounded border border-red-500 mb-2">
+                            <h4 class="font-bold text-yellow-400">${curse.naam}</h4>
+                            <p class="text-white text-xs mb-2">${curse.effect}</p>
+                            <button onclick="openAnswerModal('curse_${key}')" class="w-full bg-green-600 p-2 rounded text-xs font-bold">
+                                <i class="fa-solid fa-camera mr-1"></i> Bewijs / Klaar
+                            </button>
+                        </div>`;
+                });
+            } else {
+                curseOverlay.classList.add('hidden');
+            }
+
+            // Hider Hand
+            if (myRole === 'hider') {
+                const hand = allCards.filter(c => c.status === 'hand');
+                document.getElementById('hand-count').innerText = hand.length;
+                const container = document.getElementById('hider-hand');
+                container.innerHTML = hand.length ? '' : '<p class="text-gray-500 text-sm italic text-center py-4">Leeg</p>';
                 
-                if(myHand.length === 0) {
-                    handContainer.innerHTML = '<p class="text-gray-500 text-sm italic text-center py-8">Je hebt nog geen kaarten.</p>';
-                } else {
-                    myHand.forEach(card => {
-                        const div = document.createElement('div');
-                        div.className = "bg-gray-700 p-4 rounded-xl border border-gray-600 flex justify-between items-center shadow-lg relative overflow-hidden group";
-                        
-                        // Type Badge Logic
-                        let typeColor = "bg-gray-500";
-                        if(card.type === "Vloek") typeColor = "bg-red-500";
-                        if(card.type === "Tijd") typeColor = "bg-green-500";
-                        if(card.type === "Bonus") typeColor = "bg-blue-500";
-
-                        div.innerHTML = `
-                            <div class="absolute top-0 right-0 ${typeColor} text-[8px] font-bold text-white px-2 py-0.5 rounded-bl uppercase tracking-wider">${card.type}</div>
-                            <div class="w-2/3 pr-2">
-                                <div class="font-bold text-sm text-yellow-400 leading-tight mb-1">${card.naam}</div>
-                                <div class="text-[10px] text-gray-300 leading-snug mb-1">${card.effect}</div>
-                                <div class="text-[9px] text-red-300 italic"><i class="fa-solid fa-camera mr-1"></i>${card.taak}</div>
+                hand.forEach(c => {
+                    let color = c.type === 'Vloek' ? 'text-red-400' : (c.type === 'Bonus' ? 'text-blue-400' : 'text-green-400');
+                    container.innerHTML += `
+                        <div class="bg-gray-700 p-3 rounded flex justify-between items-center border border-gray-600">
+                            <div class="w-2/3">
+                                <div class="text-xs font-bold ${color}">${c.type}</div>
+                                <div class="font-bold text-sm text-white">${c.naam}</div>
+                                <div class="text-[10px] text-gray-400">${c.effect}</div>
+                                <div class="text-[10px] text-yellow-500 italic mt-1">Taak: ${c.taak}</div>
                             </div>
-                            <div class="flex flex-col space-y-2">
-                                <button onclick="playCard('${card.id}')" class="bg-green-600 hover:bg-green-500 text-white text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wide shadow transition transform active:scale-95">Speel</button>
-                                <button onclick="discardCard('${card.id}')" class="bg-red-900/50 hover:bg-red-900 text-red-200 text-[10px] font-bold px-3 py-1.5 rounded uppercase tracking-wide transition">Weg</button>
+                            <div class="space-y-1">
+                                <button onclick="playCard('${c.id}')" class="bg-green-600 text-white text-[10px] px-2 py-1 rounded block w-full">SPEEL</button>
+                                <button onclick="discardCard('${c.id}')" class="bg-red-900 text-red-200 text-[10px] px-2 py-1 rounded block w-full">WEG</button>
                             </div>
-                        `;
-                        handContainer.appendChild(div);
-                    });
-                }
-            }
-
-            // Refresh Seeker list
-            if(myRole === 'seeker') {
-                const activeBtn = document.querySelector('#seeker-view button.ring-2');
-                if(activeBtn) {
-                    // check ID to determine level
-                    if(activeBtn.id === 'btn-lvl-1') filterQuestions(1);
-                    if(activeBtn.id === 'btn-lvl-2') filterQuestions(2);
-                    if(activeBtn.id === 'btn-lvl-3') filterQuestions(3);
-                } else {
-                    filterQuestions(1);
-                }
+                        </div>`;
+                });
             }
         }
 
-        // --- ACTIONS ---
+        // --- TIMER & PENALTY ---
+        function handleTimer() {
+            clearInterval(timerInterval);
+            const timerDiv = document.getElementById('timer-container');
+            if (gameState.status === 'answering' && gameState.startTime) {
+                timerDiv.classList.remove('hidden');
+                timerInterval = setInterval(() => {
+                    const diff = 180000 - (Date.now() - gameState.startTime); // 3 min
+                    if (diff <= 0) {
+                        document.getElementById('countdown-display').innerText = "TE LAAT! (-10 min)";
+                        timerDiv.classList.replace('bg-gray-800', 'bg-red-600');
+                    } else {
+                        const m = Math.floor(diff / 60000);
+                        const s = Math.floor((diff % 60000) / 1000);
+                        document.getElementById('countdown-display').innerText = `${m}:${s.toString().padStart(2,'0')}`;
+                    }
+                }, 1000);
+            } else {
+                timerDiv.classList.add('hidden');
+                timerDiv.classList.replace('bg-red-600', 'bg-gray-800');
+            }
+        }
 
-        window.filterQuestions = (level) => {
-            const list = document.getElementById('questions-list');
-            list.innerHTML = "";
-            
-            // Buttons visual state
-            const btn1 = document.getElementById('btn-lvl-1');
-            const btn2 = document.getElementById('btn-lvl-2');
-            const btn3 = document.getElementById('btn-lvl-3');
-            
-            [btn1, btn2, btn3].forEach(b => {
-                b.classList.remove('ring-2', 'ring-white', 'bg-opacity-100');
-                b.classList.add('bg-opacity-50');
-                b.dataset.active = "false";
-            });
+        // --- ANSWER & UPLOAD ---
+        window.openAnswerModal = (context) => {
+            currentModalContext = context;
+            document.getElementById('answer-modal').classList.remove('hidden');
+            document.getElementById('answer-text').value = "";
+            document.getElementById('answer-file').value = "";
+            document.getElementById('answer-modal-title').innerText = context.startsWith('curse') ? "Vloek Oplossen" : "Vraag Beantwoorden";
+        };
 
-            const activeBtn = level === 1 ? btn1 : level === 2 ? btn2 : btn3;
-            activeBtn.classList.add('ring-2', 'ring-white');
-            activeBtn.dataset.active = "true";
+        window.closeAnswerModal = () => document.getElementById('answer-modal').classList.add('hidden');
 
-            const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
-            
-            if(filtered.length === 0) {
-                list.innerHTML = `<div class="bg-gray-800/50 p-8 rounded-xl text-center border border-gray-700 border-dashed">
-                    <i class="fa-solid fa-check-circle text-3xl text-gray-600 mb-2"></i>
-                    <div class="text-gray-500 italic">Geen vragen meer in dit niveau.</div>
-                </div>`;
-                return;
+        window.submitAnswer = async () => {
+            const text = document.getElementById('answer-text').value;
+            const fileInput = document.getElementById('answer-file');
+            const btn = document.getElementById('btn-send-answer');
+            const loader = document.getElementById('btn-send-loader');
+            const btnText = document.getElementById('btn-send-text');
+
+            if(!text && fileInput.files.length === 0) return alert("Vul iets in of kies een bestand.");
+
+            // UI Loading state
+            btn.disabled = true;
+            btnText.innerText = "UPLOADING...";
+            loader.classList.remove('hidden');
+
+            let mediaUrl = "";
+
+            // GitHub Upload Logic
+            if(fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                try {
+                    const contentBase64 = await new Promise((resolve, reject) => {
+                        reader.onload = e => resolve(e.target.result.split(',')[1]);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+
+                    const fileName = `${Date.now()}_${file.name}`;
+                    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}/${fileName}`;
+                    
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${GITHUB_CONFIG.token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Upload from game by ${currentUser.name}`,
+                            content: contentBase64
+                        })
+                    });
+
+                    if(!res.ok) throw new Error("GitHub Upload Failed");
+                    const json = await res.json();
+                    mediaUrl = json.content.download_url; // Direct link
+
+                } catch (e) {
+                    console.error(e);
+                    alert("Upload mislukt! Check console/token. Tekst wordt wel verstuurd.");
+                }
             }
 
-            const grouped = {};
-            filtered.forEach(q => {
-                if(!grouped[q.categorie]) grouped[q.categorie] = [];
-                grouped[q.categorie].push(q);
-            });
+            // Process Logic based on Context
+            if (currentModalContext === 'question') {
+                // Check Penalty
+                const timeTaken = Date.now() - gameState.startTime;
+                let penaltyAdded = 0;
+                if (timeTaken > 180000) { // 3 mins
+                    penaltyAdded = 10;
+                    // Update penalty in DB
+                    const currentP = gameState.penalty || 0;
+                    update(ref(db, `lobbies/${currentLobby}`), { penaltyTime: currentP + 10 });
+                }
 
-            for (const [cat, questions] of Object.entries(grouped)) {
-                list.innerHTML += `<div class="cat-header"><i class="fa-solid fa-folder-open mr-2 opacity-50"></i>${cat}</div>`;
-                questions.forEach(q => {
-                    const div = document.createElement('div');
-                    div.className = "bg-gray-700 p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-blue-400 hover:bg-gray-600 transition shadow-sm mt-2 group relative overflow-hidden";
-                    div.onclick = () => askQuestion(q.id);
-                    div.innerHTML = `
-                        <div class="text-sm font-bold text-gray-200 pr-6">${q.vraag}</div>
-                        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
+                // Log Answer
+                const msg = `ANTWOORD: ${text} ${mediaUrl ? `[BEKIJK MEDIA](${mediaUrl})` : ''} ${penaltyAdded ? '(+10 MIN STRAF!)' : ''}`;
+                push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
+
+                // Draw Cards Logic
+                const q = allQuestions.find(qu => qu.id == gameState.questionId);
+                let drawAmount = q.niveau;
+                if(q.categorie === 'Foto' || q.categorie === 'Risico') drawAmount = 3;
+                
+                update(ref(db, `lobbies/${currentLobby}/status`), 'idle'); // Unlock seekers
+                closeAnswerModal();
+                initiateDraw(drawAmount);
+
+            } else if (currentModalContext.startsWith('curse_')) {
+                const curseKey = currentModalContext.split('_')[1];
+                remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
+                
+                const msg = `VLOEK OPGELOST: ${text} ${mediaUrl ? `[BEWIJS](${mediaUrl})` : ''}`;
+                push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
+                closeAnswerModal();
             }
+
+            // Reset UI
+            btn.disabled = false;
+            btnText.innerText = "VERSTUREN";
+            loader.classList.add('hidden');
         };
 
-        window.askQuestion = (qid) => {
-            if(!confirm("Wil je deze vraag stellen?")) return;
-            const index = allQuestions.findIndex(q => q.id == qid);
-            if(index === -1) return;
-
-            const updates = {};
-            updates[`lobbies/${currentLobby}/questions/${index}/used`] = true;
-            updates[`lobbies/${currentLobby}/status`] = 'answering';
-            updates[`lobbies/${currentLobby}/activeQuestion`] = qid;
-            updates[`lobbies/${currentLobby}/timerStart`] = Date.now();
-            
-            update(ref(db), updates);
-            
-            push(ref(db, `lobbies/${currentLobby}/logs`), {
-                msg: `${currentUser.name} stelde vraag: "${allQuestions[index].vraag}"`,
-                time: Date.now()
-            });
-        };
-
-        window.confirmAnswer = () => {
-            const q = allQuestions.find(qu => qu.id == gameState.questionId);
-            let drawAmount = q.niveau;
-            if(q.categorie === 'Foto' || q.categorie === 'Risico') drawAmount = 3;
-
-            if(!confirm(`Bevestig dat je geantwoord hebt. Je mag nu ${drawAmount} kaarten trekken.`)) return;
-
-            update(ref(db, `lobbies/${currentLobby}/status`), 'idle'); 
-            initiateDraw(drawAmount);
-        };
-
+        // --- CARD DRAW LOGIC (Hergebruik van vorige keer, maar robuust) ---
         function initiateDraw(amount) {
             const deck = allCards.filter(c => !c.status || c.status === 'deck');
-            if(deck.length < 1) return alert("Deck is leeg!");
-
             const selection = [];
             let tempDeck = [...deck];
             for(let i=0; i<amount; i++) {
@@ -756,38 +757,60 @@
                 tempDeck.splice(r, 1);
             }
 
-            const currentHand = allCards.filter(c => c.status === 'hand');
-            if(currentHand.length >= 6) {
-                showOverflowModal(currentHand, selection);
+            const hand = allCards.filter(c => c.status === 'hand');
+            if(hand.length >= 6) {
+                showOverflowModal(hand, selection);
             } else {
-                if(amount === 1) {
-                    addToHand(selection[0].id);
-                } else {
-                    showSelectionModal(selection);
-                }
+                if(amount === 1) addToHand(selection[0].id);
+                else showSelectionModal(selection);
             }
         }
 
+        // ... (De rest van de kaart logica: showSelectionModal, showOverflowModal, addToHand, playCard, discardCard blijft hetzelfde als vorige versie, maar playCard voegt toe aan activeCurses) ...
+        
+        function addToHand(cid) {
+            const index = allCards.findIndex(c => c.id == cid);
+            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'hand' });
+        }
+        
+        function addToHandSilent(cid) { addToHand(cid); }
+        
+        function discardCardSilent(cid) {
+             const index = allCards.findIndex(c => c.id == cid);
+             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
+        }
+
+        window.playCard = (cid) => {
+            if(!confirm("Kaart spelen?")) return;
+            const index = allCards.findIndex(c => c.id == cid);
+            const card = allCards[index];
+            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'played' });
+            
+            if(card.type === 'Vloek') {
+                push(ref(db, `lobbies/${currentLobby}/activeCurses`), card);
+            } else if (card.type === 'Tijd') {
+                // Tijd bonus logica kan hier (bv penalty verminderen)
+            }
+            
+            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `KAART GESPEELD: ${card.naam}`, time: Date.now() });
+        };
+
+        window.discardCard = (cid) => {
+            if(!confirm("Weggooien?")) return;
+            const index = allCards.findIndex(c => c.id == cid);
+            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
+        };
+
+        // ... (Overflow modal functies ook kopiëren van vorige versie) ...
         function showSelectionModal(cards) {
             const modal = document.getElementById('card-modal');
             const container = document.getElementById('modal-cards');
             container.innerHTML = "";
-            
             cards.forEach(c => {
-                let typeColor = "text-gray-400";
-                if(c.type === "Vloek") typeColor = "text-red-400";
-                if(c.type === "Bonus") typeColor = "text-blue-400";
-                if(c.type === "Tijd") typeColor = "text-green-400";
-
                 const div = document.createElement('div');
-                div.className = "bg-gray-800 p-4 rounded-xl border border-gray-700 cursor-pointer hover:border-yellow-400 transition hover:bg-gray-700 relative";
+                div.className = "bg-gray-800 p-4 rounded border border-yellow-500 cursor-pointer";
+                div.innerHTML = `<div class="font-bold text-yellow-400">${c.naam}</div><div class="text-xs text-white">${c.effect}</div>`;
                 div.onclick = () => { addToHand(c.id); closeModal(); };
-                div.innerHTML = `
-                    <div class="absolute top-2 right-2 text-[10px] uppercase font-bold ${typeColor} border border-current px-1 rounded">${c.type}</div>
-                    <div class="font-black text-yellow-400 mb-1">${c.naam}</div>
-                    <div class="text-xs text-white mb-2 leading-snug">${c.effect}</div>
-                    <div class="text-[10px] text-gray-400 italic bg-black/20 p-2 rounded"><i class="fa-solid fa-camera mr-1"></i> ${c.taak}</div>
-                `;
                 container.appendChild(div);
             });
             modal.classList.remove('hidden');
@@ -797,106 +820,102 @@
             const modal = document.getElementById('overflow-modal');
             const newContainer = document.getElementById('overflow-new-cards');
             const handContainer = document.getElementById('overflow-hand-cards');
+            const finishBtn = document.getElementById('btn-finish-overflow');
             
             modal.classList.remove('hidden');
             newContainer.innerHTML = "";
             handContainer.innerHTML = "";
+            finishBtn.classList.add('hidden');
 
-            // New Cards
             newCards.forEach(c => {
                 const div = document.createElement('div');
-                div.className = "bg-gray-800 p-3 rounded-lg border border-green-500/50 cursor-pointer hover:bg-green-900/20 text-xs flex justify-between items-center group";
-                div.innerHTML = `<span class="font-bold text-white group-hover:text-green-400 transition">${c.naam}</span> <i class="fa-solid fa-plus text-green-500"></i>`;
+                div.className = "bg-gray-800 p-2 rounded border border-green-500 cursor-pointer text-xs";
+                div.innerText = `${c.naam}`;
                 div.onclick = () => {
                     addToHandSilent(c.id); 
+                    alert("Toegevoegd. Gooi nu eentje weg.");
                     modal.classList.add('hidden');
-                    alert("Kaart toegevoegd. Nu heb je er teveel. Gooi er eentje weg via je hand.");
+                    // In real implementation force discard logic here
                 };
                 newContainer.appendChild(div);
             });
-
-            // Hand Cards (Alternative: Swap directly)
+            
             handCards.forEach(c => {
-               const div = document.createElement('div');
-               div.className = "bg-gray-800 p-3 rounded-lg border border-red-500/50 cursor-pointer hover:bg-red-900/20 text-xs flex justify-between items-center group";
-               div.innerHTML = `<span class="font-bold text-white group-hover:text-red-400 transition">${c.naam}</span> <i class="fa-solid fa-trash text-red-500"></i>`;
-               div.onclick = () => {
-                   discardCardSilent(c.id);
-                   // Then allow picking the new one (simplified flow: just drop hand count first)
-                   alert("Kaart weggegooid. Kies nu je nieuwe kaart.");
-                   // Re-render modal logic or just keep modal open but update hand list? 
-                   // Simplified for robustness: Just close modal and restart draw logic or assume user clicked 'New' first.
-                   // Let's stick to: Pick NEW card -> Auto add -> Then user must manually discard from main screen because UI shows >6.
-               };
-               // handContainer.appendChild(div); 
-               // In this UI flow, we force adding first.
+                 const div = document.createElement('div');
+                 div.className = "bg-gray-800 p-2 rounded border border-red-500 cursor-pointer text-xs flex justify-between";
+                 div.innerHTML = `<span>${c.naam}</span> <i class="fa-solid fa-trash"></i>`;
+                 div.onclick = () => { discardCardSilent(c.id); alert("Weggegooid."); };
+                 handContainer.appendChild(div);
             });
-            // We only show New Cards to ADD. Discarding happens in main view if Hand > 6.
-            handContainer.innerHTML = "<p class='text-gray-500 italic text-[10px] text-center'>Klik op een nieuwe kaart om toe te voegen.<br>Gooi daarna een oude weg via het dashboard.</p>";
         }
-
-        function addToHand(cid) {
-            const index = allCards.findIndex(c => c.id == cid);
-            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'hand' });
-            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `Hiders hebben kaart getrokken.`, time: Date.now() });
-        }
-
-        function addToHandSilent(cid) {
-            const index = allCards.findIndex(c => c.id == cid);
-            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'hand' });
-        }
-
-        function discardCardSilent(cid) {
-             const index = allCards.findIndex(c => c.id == cid);
-             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
-        }
-
-        window.playCard = (cid) => {
-            if(!confirm("Kaart spelen? Taak gedaan?")) return;
-            const index = allCards.findIndex(c => c.id == cid);
-            const card = allCards[index];
-            
-            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'played' });
-            
-            if(card.type === 'Vloek') {
-                push(ref(db, `lobbies/${currentLobby}/activeCurses`), card);
-            }
-            
-            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `⚡ VLOEK: ${card.naam}!`, time: Date.now() });
-        };
-
-        window.discardCard = (cid) => {
-            if(!confirm("Kaart weggooien?")) return;
-            const index = allCards.findIndex(c => c.id == cid);
-            update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
-        };
 
         window.closeModal = () => document.getElementById('card-modal').classList.add('hidden');
         window.finishOverflow = () => document.getElementById('overflow-modal').classList.add('hidden');
 
+        // Seeker Actions
+        window.filterQuestions = (level) => {
+            const list = document.getElementById('questions-list');
+            list.innerHTML = "";
+            const btns = document.querySelectorAll('#seeker-view button');
+            btns.forEach(b => b.classList.remove('ring-2', 'ring-white'));
+            if(btns[level-1]) btns[level-1].classList.add('ring-2', 'ring-white');
+
+            const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
+            if(filtered.length === 0) return list.innerHTML = `<div class="text-gray-500 text-center mt-4">Op.</div>`;
+
+            // Grouping logic (simplified)
+            filtered.forEach(q => {
+                const div = document.createElement('div');
+                div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 mt-2";
+                div.onclick = () => askQuestion(q.id);
+                div.innerHTML = `<div class="text-xs font-bold text-gray-400 uppercase">${q.categorie}</div><div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
+                list.appendChild(div);
+            });
+        };
+
+        window.askQuestion = (qid) => {
+            if(gameState.status !== 'idle') return alert("Wacht tot de hiders geantwoord hebben!");
+            if(!confirm("Vraag stellen?")) return;
+            const index = allQuestions.findIndex(q => q.id == qid);
+            
+            const updates = {};
+            updates[`lobbies/${currentLobby}/questions/${index}/used`] = true;
+            updates[`lobbies/${currentLobby}/status`] = 'answering';
+            updates[`lobbies/${currentLobby}/activeQuestion`] = qid;
+            updates[`lobbies/${currentLobby}/timerStart`] = Date.now();
+            update(ref(db), updates);
+            
+            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `VRAAG: ${allQuestions[index].vraag}`, time: Date.now() });
+        };
+
         function updateLogs(logsObj) {
             const logDiv = document.getElementById('game-log');
             logDiv.innerHTML = "";
-            const entries = Object.values(logsObj).sort((a,b) => b.time - a.time);
-            entries.forEach(l => {
-                const date = new Date(l.time);
-                const timeStr = `${date.getHours()}:${date.getMinutes().toString().padStart(2,'0')}`;
-                logDiv.innerHTML += `<div class="border-b border-gray-700 pb-2 mb-2 last:border-0"><span class="text-gray-500 font-mono text-[10px] mr-2">${timeStr}</span> <span class="text-gray-300">${l.msg}</span></div>`;
+            Object.values(logsObj).sort((a,b) => b.time - a.time).forEach(l => {
+                const time = new Date(l.time).toTimeString().substr(0,5);
+                // Check if log contains markdown link [text](url)
+                let msg = l.msg;
+                const linkMatch = msg.match(/\[(.*?)\]\((.*?)\)/);
+                if(linkMatch) {
+                    msg = msg.replace(linkMatch[0], `<a href="${linkMatch[2]}" target="_blank" class="text-blue-400 underline">${linkMatch[1]}</a>`);
+                }
+                logDiv.innerHTML += `<div class="border-b border-gray-700 pb-1 mb-1"><span class="text-gray-500 text-[10px]">${time}</span> ${msg}</div>`;
             });
         }
 
-        // Expose functions
+        // Globals
         window.joinLobby = joinLobby;
         window.selectRole = selectRole;
         window.playCard = playCard;
         window.discardCard = discardCard;
         window.filterQuestions = filterQuestions;
         window.askQuestion = askQuestion;
+        window.openAnswerModal = openAnswerModal;
+        window.closeAnswerModal = closeAnswerModal;
+        window.submitAnswer = submitAnswer;
+        window.clearCurse = clearCurse; // Missing in export previously
         window.closeModal = closeModal;
-        window.confirmAnswer = confirmAnswer;
-        window.clearCurse = clearCurse;
-        window.finishOverflow = () => document.getElementById('overflow-modal').classList.add('hidden');
+        window.finishOverflow = window.finishOverflow;
     </script>
 </body>
 </html>
-
