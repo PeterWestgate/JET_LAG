@@ -540,8 +540,8 @@
             if (isAnswering || hasCurses) {
                 seekerLock.classList.remove('hidden');
                 seekerLock.innerHTML = isAnswering 
-                    ? `<i class="fa-solid fa-hourglass-half text-4xl mb-2 text-yellow-500"></i><p>Hiders zijn aan het antwoorden...</p>`
-                    : `<i class="fa-solid fa-skull text-4xl mb-2 text-red-500"></i><p>VLOEK ACTIEF!</p>`;
+                    ? `<i class="fa-solid fa-hourglass-half text-4xl mb-2 text-yellow-500 animate-spin"></i><p class="font-bold text-white text-lg">Wachten op Hiders...</p><p class="text-xs text-gray-400 mt-2">Zij moeten de vraag beantwoorden.</p>`
+                    : `<i class="fa-solid fa-skull text-4xl mb-2 text-red-500 animate-pulse"></i><p class="font-bold text-red-500 text-lg">VLOEK ACTIEF!</p><p class="text-xs text-gray-400 mt-2">Los eerst de vloek op.</p>`;
             } else {
                 seekerLock.classList.add('hidden');
             }
@@ -565,11 +565,15 @@
                 list.innerHTML = '';
                 activeCurses.forEach(([key, curse]) => {
                     list.innerHTML += `
-                        <div class="bg-gray-800 p-4 rounded border border-red-500 mb-2">
-                            <h4 class="font-bold text-yellow-400">${curse.naam}</h4>
-                            <p class="text-white text-xs mb-2">${curse.effect}</p>
-                            <button onclick="openAnswerModal('curse_${key}')" class="w-full bg-green-600 p-2 rounded text-xs font-bold">
-                                <i class="fa-solid fa-camera mr-1"></i> Bewijs / Klaar
+                        <div class="bg-gray-800 p-4 rounded border border-red-500 mb-2 shadow-lg">
+                            <div class="flex items-center mb-2">
+                                <i class="fa-solid fa-bolt text-yellow-400 mr-2"></i>
+                                <h4 class="font-bold text-white text-lg">${curse.naam}</h4>
+                            </div>
+                            <p class="text-gray-300 text-sm mb-4 leading-snug">${curse.effect}</p>
+                            <div class="text-[10px] text-gray-500 italic mb-4 bg-black/20 p-2 rounded">Taak: ${curse.taak}</div>
+                            <button onclick="clearCurse('${key}')" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02] shadow-md">
+                                <i class="fa-solid fa-check mr-2"></i> Taak Voltooid
                             </button>
                         </div>`;
                 });
@@ -582,21 +586,21 @@
                 const hand = allCards.filter(c => c.status === 'hand');
                 document.getElementById('hand-count').innerText = hand.length;
                 const container = document.getElementById('hider-hand');
-                container.innerHTML = hand.length ? '' : '<p class="text-gray-500 text-sm italic text-center py-4">Leeg</p>';
+                container.innerHTML = hand.length ? '' : '<p class="text-gray-500 text-sm italic text-center py-8">Je hand is leeg.</p>';
                 
                 hand.forEach(c => {
                     let color = c.type === 'Vloek' ? 'text-red-400' : (c.type === 'Bonus' ? 'text-blue-400' : 'text-green-400');
                     container.innerHTML += `
-                        <div class="bg-gray-700 p-3 rounded flex justify-between items-center border border-gray-600">
-                            <div class="w-2/3">
-                                <div class="text-xs font-bold ${color}">${c.type}</div>
-                                <div class="font-bold text-sm text-white">${c.naam}</div>
-                                <div class="text-[10px] text-gray-400">${c.effect}</div>
-                                <div class="text-[10px] text-yellow-500 italic mt-1">Taak: ${c.taak}</div>
+                        <div class="bg-gray-700 p-4 rounded-xl flex justify-between items-center border border-gray-600 shadow-md mb-3">
+                            <div class="w-2/3 pr-2">
+                                <div class="text-[10px] font-bold uppercase tracking-wider ${color} mb-1">${c.type}</div>
+                                <div class="font-bold text-sm text-white mb-1 leading-tight">${c.naam}</div>
+                                <div class="text-[11px] text-gray-300 leading-snug mb-2">${c.effect}</div>
+                                <div class="text-[10px] text-yellow-500 italic bg-black/20 p-1.5 rounded inline-block"><i class="fa-solid fa-camera mr-1"></i>${c.taak}</div>
                             </div>
-                            <div class="space-y-1">
-                                <button onclick="playCard('${c.id}')" class="bg-green-600 text-white text-[10px] px-2 py-1 rounded block w-full">SPEEL</button>
-                                <button onclick="discardCard('${c.id}')" class="bg-red-900 text-red-200 text-[10px] px-2 py-1 rounded block w-full">WEG</button>
+                            <div class="flex flex-col space-y-2 w-24">
+                                <button onclick="playCard('${c.id}')" class="bg-green-600 hover:bg-green-500 text-white text-xs font-bold py-2 rounded shadow transition active:scale-95">SPEEL</button>
+                                <button onclick="discardCard('${c.id}')" class="bg-gray-600 hover:bg-red-900/80 text-gray-300 hover:text-red-200 text-xs font-bold py-2 rounded transition">WEG</button>
                             </div>
                         </div>`;
                 });
@@ -626,6 +630,7 @@
                     if (diff <= 0) {
                         document.getElementById('countdown-display').innerText = "TE LAAT! (-10 min)";
                         timerDiv.classList.replace('bg-gray-800', 'bg-red-600');
+                        timerDiv.classList.replace('border-blue-500', 'border-red-800');
                     } else {
                         const m = Math.floor(diff / 60000);
                         const s = Math.floor((diff % 60000) / 1000);
@@ -634,84 +639,51 @@
                 }, 1000);
             } else {
                 timerDiv.classList.add('hidden');
-                timerDiv.classList.replace('bg-red-600', 'bg-gray-800');
+                timerDiv.classList.replace('bg-red-600', 'bg-gray-800'); // Reset colors
+                timerDiv.classList.replace('border-red-800', 'border-blue-500');
             }
         }
 
-        // --- ANSWER & UPLOAD ---
-        window.openAnswerModal = (context) => {
-            currentModalContext = context;
-            document.getElementById('answer-modal').classList.remove('hidden');
-            document.getElementById('answer-text').value = "";
-            document.getElementById('answer-file').value = "";
-            document.getElementById('answer-modal-title').innerText = context.startsWith('curse') ? "Vloek Oplossen" : "Vraag Beantwoorden";
-        };
+        // --- ANSWER ACTIONS ---
+        // Simplified flow: Just confirm whatsapp message sent
+        window.confirmAnswer = () => {
+            if(!confirm("Heb je het antwoord verstuurd in de WhatsApp groep?")) return;
 
-        window.closeAnswerModal = () => document.getElementById('answer-modal').classList.add('hidden');
-
-        window.submitAnswer = async () => {
-            const text = document.getElementById('answer-text').value;
-            const fileInput = document.getElementById('answer-file');
-            const btn = document.getElementById('btn-send-answer');
-
-            if(!text && fileInput.files.length === 0) return alert("Vul iets in of kies een bestand.");
-
-            // UI Loading state
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> VERSTUREN...';
-
-            let mediaUrl = "";
-
-            // Simpel: Als er een bestand is, stuur een bericht dat het via Whatsapp moet
-            if(fileInput.files.length > 0) {
-                 // We gebruiken nu GEEN upload meer, gewoon melding in logboek
-                 mediaUrl = "(Foto verstuurd via WhatsApp)";
+            // Check Penalty Logic
+            const timeTaken = Date.now() - gameState.startTime;
+            let penaltyAdded = 0;
+            if (timeTaken > 180000) { // 3 mins
+                penaltyAdded = 10;
+                const currentP = gameState.penalty || 0;
+                update(ref(db, `lobbies/${currentLobby}`), { penaltyTime: currentP + 10 });
             }
 
-            // Process Logic based on Context
-            if (currentModalContext === 'question') {
-                // Check Penalty
-                const timeTaken = Date.now() - gameState.startTime;
-                let penaltyAdded = 0;
-                if (timeTaken > 180000) { // 3 mins
-                    penaltyAdded = 10;
-                    // Update penalty in DB
-                    const currentP = gameState.penalty || 0;
-                    update(ref(db, `lobbies/${currentLobby}`), { penaltyTime: currentP + 10 });
-                }
+            // Log
+            const msg = `Hiders hebben geantwoord! ${penaltyAdded ? '(+10 MIN STRAF!)' : ''}`;
+            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
 
-                // Log Answer
-                const msg = `ANTWOORD: ${text} ${mediaUrl} ${penaltyAdded ? '(+10 MIN STRAF!)' : ''}`;
-                push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
+            // Logic for drawing cards
+            const q = allQuestions.find(qu => qu.id == gameState.questionId);
+            let drawAmount = q.niveau;
+            if(q.categorie === 'Foto' || q.categorie === 'Risico') drawAmount = 3;
 
-                // Draw Cards Logic
-                const q = allQuestions.find(qu => qu.id == gameState.questionId);
-                let drawAmount = q.niveau;
-                if(q.categorie === 'Foto' || q.categorie === 'Risico') drawAmount = 3;
-                
-                update(ref(db, `lobbies/${currentLobby}/status`), 'idle'); // Unlock seekers
-                closeAnswerModal();
-                initiateDraw(drawAmount);
-
-            } else if (currentModalContext.startsWith('curse_')) {
-                const curseKey = currentModalContext.split('_')[1];
-                remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
-                
-                const msg = `VLOEK OPGELOST: ${text} ${mediaUrl}`;
-                push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
-                closeAnswerModal();
-            }
-
-            // Reset UI
-            btn.disabled = false;
-            btn.innerText = "VERSTUREN";
+            update(ref(db, `lobbies/${currentLobby}/status`), 'idle'); 
+            initiateDraw(drawAmount);
         };
+
 
         // --- CARD DRAW LOGIC ---
         function initiateDraw(amount) {
             const deck = allCards.filter(c => !c.status || c.status === 'deck');
             const selection = [];
             let tempDeck = [...deck];
+            
+            // Safety check if deck is empty
+            if(tempDeck.length < amount) {
+                alert("Deck is bijna op! We schudden de weggegooide kaarten.");
+                // Here you could implement reshuffle logic, for now just alert
+            }
+
             for(let i=0; i<amount; i++) {
                 if(tempDeck.length === 0) break;
                 const r = Math.floor(Math.random() * tempDeck.length);
@@ -723,8 +695,12 @@
             if(hand.length >= 6) {
                 showOverflowModal(hand, selection);
             } else {
-                if(amount === 1) addToHand(selection[0].id);
-                else showSelectionModal(selection);
+                if(amount === 1) {
+                    addToHand(selection[0].id);
+                    alert("Je hebt 1 kaart getrokken: " + selection[0].naam);
+                } else {
+                    showSelectionModal(selection);
+                }
             }
         }
 
@@ -741,7 +717,7 @@
         }
 
         window.playCard = (cid) => {
-            if(!confirm("Kaart spelen?")) return;
+            if(!confirm("Kaart spelen? Heb je het bewijs in WhatsApp gestuurd?")) return;
             const index = allCards.findIndex(c => c.id == cid);
             const card = allCards[index];
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'played' });
@@ -754,13 +730,13 @@
         };
 
         window.discardCard = (cid) => {
-            if(!confirm("Weggooien?")) return;
+            if(!confirm("Weet je zeker dat je deze kaart wilt weggooien?")) return;
             const index = allCards.findIndex(c => c.id == cid);
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
         };
         
         window.clearCurse = (curseKey) => {
-            if(!confirm("Zijn jullie zeker dat deze vloek voorbij is of de taak voltooid is?")) return;
+            if(!confirm("Is de taak voltooid of de tijd voorbij?")) return;
             remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
             push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `Vloek opgeheven door zoekers.`, time: Date.now() });
         };
@@ -770,9 +746,14 @@
             const container = document.getElementById('modal-cards');
             container.innerHTML = "";
             cards.forEach(c => {
+                let typeColor = c.type === 'Vloek' ? 'text-red-400' : 'text-blue-400';
                 const div = document.createElement('div');
-                div.className = "bg-gray-800 p-4 rounded border border-yellow-500 cursor-pointer";
-                div.innerHTML = `<div class="font-bold text-yellow-400">${c.naam}</div><div class="text-xs text-white">${c.effect}</div>`;
+                div.className = "bg-gray-800 p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-yellow-400 transition transform hover:scale-[1.02]";
+                div.innerHTML = `
+                    <div class="text-[10px] uppercase font-bold ${typeColor} mb-1">${c.type}</div>
+                    <div class="font-black text-white text-lg mb-1">${c.naam}</div>
+                    <div class="text-xs text-gray-300">${c.effect}</div>
+                `;
                 div.onclick = () => { addToHand(c.id); closeModal(); };
                 container.appendChild(div);
             });
@@ -792,11 +773,11 @@
 
             newCards.forEach(c => {
                 const div = document.createElement('div');
-                div.className = "bg-gray-800 p-2 rounded border border-green-500 cursor-pointer text-xs";
-                div.innerText = `${c.naam}`;
+                div.className = "bg-gray-800 p-3 rounded-lg border border-green-500/50 cursor-pointer hover:bg-green-900/20 text-xs flex justify-between items-center group mb-2";
+                div.innerHTML = `<span class="font-bold text-white group-hover:text-green-400 transition">${c.naam}</span> <i class="fa-solid fa-plus text-green-500"></i>`;
                 div.onclick = () => {
                     addToHandSilent(c.id); 
-                    alert("Toegevoegd. Gooi nu eentje weg.");
+                    alert("Kaart toegevoegd. Je hebt er nu teveel. Gooi er eentje weg uit je hand lijst.");
                     modal.classList.add('hidden');
                 };
                 newContainer.appendChild(div);
@@ -804,9 +785,9 @@
             
             handCards.forEach(c => {
                  const div = document.createElement('div');
-                 div.className = "bg-gray-800 p-2 rounded border border-red-500 cursor-pointer text-xs flex justify-between";
-                 div.innerHTML = `<span>${c.naam}</span> <i class="fa-solid fa-trash"></i>`;
-                 div.onclick = () => { discardCardSilent(c.id); alert("Weggegooid."); };
+                 div.className = "bg-gray-800 p-3 rounded-lg border border-red-500/50 cursor-pointer hover:bg-red-900/20 text-xs flex justify-between items-center group mb-2";
+                 div.innerHTML = `<span class="font-bold text-white group-hover:text-red-400 transition">${c.naam}</span> <i class="fa-solid fa-trash text-red-500"></i>`;
+                 div.onclick = () => { discardCardSilent(c.id); alert("Kaart weggegooid. Je kan nu een nieuwe kiezen (heropen app als nodig)."); modal.classList.add('hidden'); };
                  handContainer.appendChild(div);
             });
         }
@@ -820,13 +801,19 @@
             list.innerHTML = "";
             const btns = document.querySelectorAll('#seeker-view button');
             btns.forEach(b => b.classList.remove('ring-2', 'ring-white', 'bg-opacity-100'));
-            const activeBtn = level === 1 ? document.getElementById('btn-lvl-1') : level === 2 ? document.getElementById('btn-lvl-2') : document.getElementById('btn-lvl-3');
-            activeBtn.classList.add('ring-2', 'ring-white');
+            
+            const btnId = `btn-lvl-${level}`;
+            const activeBtn = document.getElementById(btnId);
+            if(activeBtn) activeBtn.classList.add('ring-2', 'ring-white');
 
             const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
-            if(filtered.length === 0) return list.innerHTML = `<div class="text-gray-500 text-center mt-4">Geen vragen meer.</div>`;
+            
+            if(filtered.length === 0) {
+                list.innerHTML = `<div class="bg-gray-800/50 p-8 rounded-xl text-center border border-gray-700 border-dashed mt-4"><i class="fa-solid fa-check-circle text-3xl text-gray-600 mb-2"></i><div class="text-gray-500 italic">Geen vragen meer.</div></div>`;
+                return;
+            }
 
-            // Grouping
+            // Grouping Logic
             const grouped = {};
             filtered.forEach(q => {
                 if(!grouped[q.categorie]) grouped[q.categorie] = [];
@@ -834,12 +821,17 @@
             });
 
             for (const [cat, questions] of Object.entries(grouped)) {
-                list.innerHTML += `<div class="cat-header">${cat}</div>`;
+                list.innerHTML += `<div class="cat-header"><i class="fa-solid fa-folder-open mr-2 opacity-50"></i>${cat}</div>`;
                 questions.forEach(q => {
                     const div = document.createElement('div');
-                    div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 mt-2";
+                    div.className = "bg-gray-700 p-4 rounded-xl border border-gray-600 cursor-pointer hover:border-blue-400 hover:bg-gray-600 transition shadow-sm mt-2 group relative overflow-hidden";
                     div.onclick = () => askQuestion(q.id);
-                    div.innerHTML = `<div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
+                    div.innerHTML = `
+                        <div class="text-sm font-bold text-gray-200 pr-6">${q.vraag}</div>
+                        <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    `;
                     list.appendChild(div);
                 });
             }
@@ -847,9 +839,10 @@
 
         window.askQuestion = (qid) => {
             if(gameState.status !== 'idle') return alert("Wacht tot de hiders geantwoord hebben!");
-            if(!confirm("Vraag stellen?")) return;
+            if(!confirm("Wil je deze vraag stellen?")) return;
             const index = allQuestions.findIndex(q => q.id == qid);
-            
+            if(index === -1) return;
+
             const updates = {};
             updates[`lobbies/${currentLobby}/questions/${index}/used`] = true;
             updates[`lobbies/${currentLobby}/status`] = 'answering';
@@ -860,19 +853,17 @@
             push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `VRAAG: ${allQuestions[index].vraag}`, time: Date.now() });
         };
 
-        window.confirmAnswer = () => {
-             // Just trigger the modal for hider to type answer
-             openAnswerModal('question');
-        };
-
         function updateLogs(logsObj) {
             const logDiv = document.getElementById('game-log');
             logDiv.innerHTML = "";
             Object.values(logsObj).sort((a,b) => b.time - a.time).forEach(l => {
                 const time = new Date(l.time).toTimeString().substr(0,5);
-                logDiv.innerHTML += `<div class="border-b border-gray-700 pb-1 mb-1"><span class="text-gray-500 text-[10px]">${time}</span> ${l.msg}</div>`;
+                logDiv.innerHTML += `<div class="border-b border-gray-700 pb-2 mb-2 last:border-0"><span class="text-gray-500 font-mono text-[10px] mr-2">${time}</span> <span class="text-gray-300">${l.msg}</span></div>`;
             });
         }
+
+        // --- GITHUB / UPLOAD REMOVED, OPEN MODAL REMOVED ---
+        // Simplified to direct confirm
 
         // Globals
         window.joinLobby = joinLobby;
@@ -881,13 +872,13 @@
         window.discardCard = discardCard;
         window.filterQuestions = filterQuestions;
         window.askQuestion = askQuestion;
-        window.openAnswerModal = openAnswerModal;
-        window.closeAnswerModal = closeAnswerModal;
-        window.submitAnswer = submitAnswer;
+        window.confirmAnswer = confirmAnswer;
         window.clearCurse = clearCurse;
         window.closeModal = closeModal;
         window.finishOverflow = window.finishOverflow;
-        window.confirmAnswer = window.confirmAnswer;
     </script>
+    
+    <!-- FIREBASE CONFIG INJECTION SPOT -->
+    <!-- Pas regel 530 aan met jouw data -->
 </body>
 </html>
