@@ -11,23 +11,23 @@
         .card-jetlag { background: #1f2937; border-left: 4px solid #fbbf24; transition: transform 0.1s; }
         .card-jetlag:active { transform: scale(0.98); }
         .btn-primary { background-color: #fbbf24; color: #1a1a1a; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
-        .btn-primary:hover { background-color: #f59e0b; }
         
         /* Categorie headers */
         .cat-header { background-color: #374151; color: #fbbf24; font-weight: bold; padding: 8px 12px; border-radius: 6px; margin-top: 16px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #fbbf24; }
 
-        /* Curse Overlay Animation */
+        /* Animaties */
         @keyframes pulse-red {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
             70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         .curse-active { animation: pulse-red 2s infinite; border: 2px solid #ef4444; }
+        .disabled-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; border-radius: inherit; z-index: 10; }
         
-        /* Scrollbar hide */
+        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #111827; }
-        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-4 selection:bg-yellow-500 selection:text-black">
@@ -37,7 +37,6 @@
         <div class="text-center space-y-2">
             <i class="fa-solid fa-map-location-dot text-6xl text-yellow-400 mb-4"></i>
             <h1 class="text-5xl font-black text-white tracking-tighter">LEUVEN<br><span class="text-yellow-400">HIDE & SEEK</span></h1>
-            <p class="text-gray-400 text-sm font-mono">STRATEGIC OUTDOOR GAME</p>
         </div>
         
         <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl space-y-6 border border-gray-700">
@@ -49,9 +48,7 @@
                 <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Lobby Code</label>
                 <input type="text" id="lobbycode" class="w-full p-4 rounded-lg bg-gray-900 border border-gray-600 focus:border-yellow-400 outline-none text-white font-bold uppercase tracking-widest" placeholder="LEUVEN1">
             </div>
-            <button id="join-btn" onclick="joinLobby()" class="w-full btn-primary p-4 rounded-lg shadow-lg hover:shadow-yellow-400/20 transition-all transform hover:-translate-y-1">
-                START SPEL
-            </button>
+            <button id="join-btn" onclick="joinLobby()" class="w-full btn-primary p-4 rounded-lg shadow-lg">START SPEL</button>
         </div>
     </div>
 
@@ -59,146 +56,101 @@
     <div id="role-screen" class="hidden w-full max-w-md space-y-6 mt-10 text-center">
         <h2 class="text-3xl font-black text-white">KIES JE TEAM</h2>
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="selectRole('hider')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-yellow-400 hover:bg-gray-700 transition-all group">
-                <i class="fa-solid fa-user-secret text-5xl text-gray-500 group-hover:text-yellow-400 mb-4 transition-colors"></i>
+            <button onclick="selectRole('hider')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-yellow-400 transition-all group">
+                <i class="fa-solid fa-user-secret text-5xl text-gray-500 group-hover:text-yellow-400 mb-4"></i>
                 <div class="font-black text-xl text-white">HIDER</div>
-                <div class="text-xs text-gray-400 mt-2">Verstop & Saboteer</div>
             </button>
-            <button onclick="selectRole('seeker')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-blue-400 hover:bg-gray-700 transition-all group">
-                <i class="fa-solid fa-binoculars text-5xl text-gray-500 group-hover:text-blue-400 mb-4 transition-colors"></i>
+            <button onclick="selectRole('seeker')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-blue-400 transition-all group">
+                <i class="fa-solid fa-binoculars text-5xl text-gray-500 group-hover:text-blue-400 mb-4"></i>
                 <div class="font-black text-xl text-white">ZOEKER</div>
-                <div class="text-xs text-gray-400 mt-2">Vraag & Jaag</div>
             </button>
         </div>
     </div>
 
     <!-- GAME DASHBOARD -->
     <div id="game-screen" class="hidden w-full max-w-lg space-y-4 pb-24">
-        <!-- Header -->
-        <div class="flex justify-between items-center bg-gray-800/90 backdrop-blur p-4 rounded-xl sticky top-2 z-40 shadow-lg border border-gray-700">
-            <div class="flex items-center space-x-3">
-                <div id="role-icon" class="w-10 h-10 rounded-full flex items-center justify-center bg-gray-700 text-lg"></div>
-                <div>
-                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Lobby: <span id="display-lobby" class="text-white"></span></div>
-                    <div class="text-sm font-bold text-white"><span id="display-user"></span></div>
+        <!-- Header & Stats -->
+        <div class="bg-gray-800/90 backdrop-blur p-4 rounded-xl sticky top-2 z-40 shadow-lg border border-gray-700">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center space-x-3">
+                    <div id="role-icon" class="w-10 h-10 rounded-full flex items-center justify-center bg-gray-700 text-lg"></div>
+                    <div>
+                        <div class="text-[10px] font-bold text-gray-400 uppercase">Lobby: <span id="display-lobby" class="text-white"></span></div>
+                        <div class="text-sm font-bold text-white"><span id="display-user"></span></div>
+                    </div>
                 </div>
+                <div id="role-badge" class="px-3 py-1 rounded-full font-black text-[10px] tracking-wider border border-white/10"></div>
             </div>
-            <div id="role-badge" class="px-3 py-1 rounded-full font-black text-[10px] tracking-wider border border-white/10"></div>
+            <!-- Penalty Display -->
+            <div class="flex justify-between bg-black/40 p-2 rounded text-xs font-mono">
+                <span class="text-gray-400">STRAFTIJD:</span>
+                <span id="penalty-display" class="text-red-400 font-bold">0 min</span>
+            </div>
         </div>
 
         <!-- TIMER BAR -->
-        <div id="timer-container" class="hidden sticky top-20 z-30 bg-red-600 text-white p-2 rounded-lg text-center font-bold shadow-lg flex items-center justify-center space-x-2 animate-pulse">
-            <i class="fa-solid fa-hourglass-half animate-spin"></i>
+        <div id="timer-container" class="hidden sticky top-32 z-30 bg-gray-800 text-white p-2 rounded-lg text-center font-bold shadow-lg flex items-center justify-center space-x-2 border border-blue-500">
+            <i class="fa-solid fa-hourglass-half animate-spin text-blue-400"></i>
             <span>ANTWOORD TIJD: <span id="countdown-display" class="font-mono text-xl">03:00</span></span>
         </div>
 
         <!-- CURSE OVERLAY (For Seekers) -->
-        <div id="curse-overlay" class="hidden fixed inset-0 z-50 bg-red-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-6">
-            <div class="bg-gray-900 p-8 rounded-2xl border-2 border-red-500 shadow-2xl w-full max-w-md relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-2 bg-red-500 animate-pulse"></div>
+        <div id="curse-overlay" class="hidden fixed inset-0 z-50 bg-red-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-6 overflow-y-auto">
+            <div class="bg-gray-900 p-6 rounded-2xl border-2 border-red-500 shadow-2xl w-full max-w-md">
                 <i class="fa-solid fa-triangle-exclamation text-6xl text-red-500 mb-4"></i>
                 <h2 class="text-3xl font-black text-white mb-2 uppercase">Vloek Actief!</h2>
-                <p class="text-gray-300 text-sm mb-6">Jullie zijn vervloekt door de Hiders. Voer de taak uit om verder te gaan.</p>
-                
-                <div id="active-curses-list" class="space-y-4 text-left max-h-60 overflow-y-auto">
-                    <!-- Active curses injected here -->
-                </div>
+                <div id="active-curses-list" class="space-y-4 text-left"></div>
             </div>
         </div>
 
         <!-- HIDER VIEW -->
         <div id="hider-view" class="hidden space-y-4">
             
-            <!-- Active Question Panel -->
-            <div id="hider-action-panel" class="hidden bg-gradient-to-br from-blue-900 to-blue-800 border border-blue-500 p-6 rounded-2xl text-center space-y-4 shadow-xl">
+            <!-- Answer Panel -->
+            <div id="hider-action-panel" class="hidden bg-blue-900 border border-blue-500 p-6 rounded-2xl text-center space-y-4 shadow-xl">
                 <div class="inline-block bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider mb-1">Nieuwe Vraag</div>
-                <h3 id="current-question-text" class="font-bold text-xl text-white leading-tight">...</h3>
-                <div class="flex justify-center space-x-4 text-xs text-blue-200">
-                    <span class="bg-black/20 px-2 py-1 rounded"><i class="fa-solid fa-layer-group mr-1"></i> Niveau <span id="current-question-level"></span></span>
-                </div>
+                <h3 id="current-question-text" class="font-bold text-xl text-white">...</h3>
+                <div class="text-xs text-blue-200">Niveau <span id="current-question-level"></span></div>
                 
-                <button onclick="confirmAnswer()" class="w-full bg-white text-blue-900 font-bold p-4 rounded-xl shadow-lg hover:bg-blue-50 transition flex items-center justify-center space-x-2">
+                <button onclick="openAnswerModal('question')" class="w-full bg-white text-blue-900 font-bold p-4 rounded-xl shadow-lg hover:bg-blue-50 transition flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-paper-plane"></i>
-                    <span>Bevestig Antwoord & Trek Kaarten</span>
+                    <span>BEANTWOORDEN</span>
                 </button>
-                <p class="text-[10px] text-blue-300">Antwoord eerst in WhatsApp, druk dan hier.</p>
             </div>
 
             <!-- Hand -->
             <div class="bg-gray-800 p-5 rounded-2xl border border-gray-700">
                 <div class="flex justify-between items-end mb-4">
-                    <h3 class="font-bold text-gray-200 flex items-center">
-                        <i class="fa-solid fa-hand text-yellow-400 mr-2"></i> Jouw Hand
-                    </h3>
-                    <span class="text-xs font-mono bg-gray-900 text-gray-400 px-2 py-1 rounded border border-gray-700"><span id="hand-count">0</span>/6</span>
+                    <h3 class="font-bold text-gray-200 flex items-center"><i class="fa-solid fa-hand text-yellow-400 mr-2"></i> Hand</h3>
+                    <span class="text-xs font-mono bg-gray-900 text-gray-400 px-2 py-1 rounded"><span id="hand-count">0</span>/6</span>
                 </div>
-                <div id="hider-hand" class="space-y-3 min-h-[100px]">
-                    <p class="text-gray-500 text-sm italic text-center py-8">Je hebt nog geen kaarten.</p>
-                </div>
+                <div id="hider-hand" class="space-y-3 min-h-[100px]"></div>
             </div>
         </div>
 
         <!-- SEEKER VIEW -->
-        <div id="seeker-view" class="hidden space-y-4">
-            <div class="bg-gray-800 p-2 rounded-2xl border border-gray-700 sticky top-[70px] z-30 shadow-xl">
-                <!-- Filter Tabs -->
+        <div id="seeker-view" class="hidden space-y-4 relative">
+            <!-- Block overlay when status is not idle -->
+            <div id="seeker-lock" class="hidden absolute inset-0 bg-gray-900/80 z-20 flex flex-col items-center justify-center text-center p-4 rounded-xl backdrop-blur-sm">
+                <i class="fa-solid fa-lock text-4xl text-gray-500 mb-2"></i>
+                <p class="font-bold text-white">Wachten op Hiders...</p>
+                <p class="text-xs text-gray-400 mt-1">Je kan geen vragen stellen nu.</p>
+            </div>
+
+            <div class="bg-gray-800 p-2 rounded-2xl border border-gray-700 sticky top-[85px] z-10 shadow-xl">
                 <div class="flex space-x-1">
-                    <button onclick="filterQuestions(1)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase transition hover:bg-green-900/50 data-[active=true]:bg-green-600 data-[active=true]:text-white" id="btn-lvl-1">Niveau 1</button>
-                    <button onclick="filterQuestions(2)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase transition hover:bg-yellow-900/50 data-[active=true]:bg-yellow-600 data-[active=true]:text-white" id="btn-lvl-2">Niveau 2</button>
-                    <button onclick="filterQuestions(3)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase transition hover:bg-red-900/50 data-[active=true]:bg-red-600 data-[active=true]:text-white" id="btn-lvl-3">Niveau 3</button>
+                    <button onclick="filterQuestions(1)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase" id="btn-lvl-1">Niveau 1</button>
+                    <button onclick="filterQuestions(2)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase" id="btn-lvl-2">Niveau 2</button>
+                    <button onclick="filterQuestions(3)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase" id="btn-lvl-3">Niveau 3</button>
                 </div>
             </div>
-
-            <div id="questions-list" class="space-y-2 pb-10">
-                <!-- Vragen worden hier geladen -->
-            </div>
+            <div id="questions-list" class="space-y-2 pb-10"></div>
         </div>
 
-        <!-- SHARED LOG -->
+        <!-- LOG -->
         <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
-            <h3 class="font-bold mb-3 text-gray-500 text-[10px] uppercase tracking-widest">Spel Logboek</h3>
-            <div id="game-log" class="text-xs space-y-2 h-40 overflow-y-auto text-gray-300 font-mono scrollbar-thin">
-                <!-- Logs -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Selection (Normal Draw) -->
-    <div id="card-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-gray-900 w-full max-w-md rounded-2xl p-6 space-y-6 border border-yellow-500/30 shadow-2xl">
-            <div class="text-center">
-                <i class="fa-solid fa-gifts text-4xl text-yellow-400 mb-2"></i>
-                <h3 class="text-xl font-black text-white">KIES EEN KAART</h3>
-                <p class="text-xs text-gray-400">Kies er 1 om te houden. De rest verdwijnt.</p>
-            </div>
-            <div id="modal-cards" class="space-y-3 max-h-96 overflow-y-auto"></div>
-        </div>
-    </div>
-
-    <!-- Modal for Overflow (Hand Full) -->
-    <div id="overflow-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur flex items-center justify-center p-4 z-50">
-        <div class="bg-gray-900 w-full max-w-md rounded-2xl p-6 space-y-4 border-2 border-red-500 shadow-2xl relative">
-            <div class="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2"><i class="fa-solid fa-hand"></i></div>
-            <div class="text-center">
-                <h3 class="text-xl font-black text-white">HAND ZIT VOL!</h3>
-                <p class="text-sm text-gray-400">Je moet kaarten weggooien tot je er 6 hebt.</p>
-            </div>
-            
-            <div class="space-y-2 bg-gray-800/50 p-3 rounded-xl">
-                <h4 class="text-[10px] font-bold uppercase text-yellow-400 tracking-wider">Nieuw Getrokken (Klik om te houden):</h4>
-                <div id="overflow-new-cards" class="space-y-2"></div>
-            </div>
-
-            <div class="text-center text-gray-500 text-xs"><i class="fa-solid fa-arrow-down"></i> Wissel met <i class="fa-solid fa-arrow-down"></i></div>
-
-            <div class="space-y-2 bg-gray-800/50 p-3 rounded-xl">
-                <h4 class="text-[10px] font-bold uppercase text-blue-400 tracking-wider">Jouw Huidige Hand (Klik om weg te doen):</h4>
-                <div id="overflow-hand-cards" class="space-y-2 max-h-40 overflow-y-auto"></div>
-            </div>
-            
-            <button onclick="finishOverflow()" id="btn-finish-overflow" class="w-full bg-green-600 text-white p-4 rounded-xl font-bold hidden shadow-lg">
-                Klaar (6 Kaarten over)
-            </button>
+            <h3 class="font-bold mb-3 text-gray-500 text-[10px] uppercase tracking-widest">Logboek</h3>
+            <div id="game-log" class="text-xs space-y-2 h-40 overflow-y-auto text-gray-300 font-mono scrollbar-thin"></div>
         </div>
     </div>
 
@@ -226,39 +178,60 @@
         </div>
     </div>
 
-    <!-- FIREBASE & LOGIC -->
+    <!-- CARD SELECTION MODAL -->
+    <div id="card-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 w-full max-w-md rounded-2xl p-6 space-y-6 border border-yellow-500/30">
+            <div class="text-center">
+                <i class="fa-solid fa-gifts text-4xl text-yellow-400 mb-2"></i>
+                <h3 class="text-xl font-black text-white">KIES EEN KAART</h3>
+                <p class="text-xs text-gray-400">Kies er 1 om te houden. De rest verdwijnt.</p>
+            </div>
+            <div id="modal-cards" class="space-y-3 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- OVERFLOW MODAL -->
+    <div id="overflow-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 w-full max-w-md rounded-2xl p-6 space-y-4 border-2 border-red-500">
+            <div class="text-center"><h3 class="text-xl font-black text-white">HAND ZIT VOL!</h3><p class="text-sm text-gray-400">Je moet kaarten weggooien tot je er 6 hebt.</p></div>
+            <div class="space-y-2 bg-gray-800/50 p-3 rounded-xl"><h4 class="text-[10px] font-bold uppercase text-yellow-400">Nieuw:</h4><div id="overflow-new-cards" class="space-y-2"></div></div>
+            <div class="space-y-2 bg-gray-800/50 p-3 rounded-xl"><h4 class="text-[10px] font-bold uppercase text-blue-400">Huidige Hand:</h4><div id="overflow-hand-cards" class="space-y-2 max-h-40 overflow-y-auto"></div></div>
+            <button onclick="finishOverflow()" id="btn-finish-overflow" class="w-full bg-green-600 text-white p-4 rounded-xl font-bold hidden">Klaar</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, update, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // --- VUL HIER JOUW FIREBASE CONFIG IN ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCP1yVG3ssEyOub_F6P__90G1bM13kDaz0",
-            authDomain: "jetlagleuven.firebaseapp.com",
-            databaseURL: "https://jetlagleuven-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "jetlagleuven",
-            storageBucket: "jetlagleuven.firebasestorage.app",
-            messagingSenderId: "461047598360",
-            appId: "1:461047598360:web:34dfbfa265e3004ceb626d"
-        };
-        
-        // --- GITHUB CONFIG (VUL DIT IN!) ---
+        // --- GITHUB CONFIG ---
         const GITHUB_CONFIG = {
-            token: "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", // Maak een token op github.com/settings/tokens
+            token: "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", 
             owner: "PeterWestgate",
-            repo: "JET_LAG", // Naam van je repo
-            path: "uploads" // Map in je repo
+            repo: "JET_LAG", 
+            path: "uploads"
+        };
+
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyCP1yVG3ssEyOub_F6P__90G1bM13kDaz0",
+          authDomain: "jetlagleuven.firebaseapp.com",
+          databaseURL: "https://jetlagleuven-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "jetlagleuven",
+          storageBucket: "jetlagleuven.firebasestorage.app",
+          messagingSenderId: "461047598360",
+          appId: "1:461047598360:web:34dfbfa265e3004ceb626d"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // --- COMPLETE DATASET (Leuven + Maaseik Mix + Jetlag Logic) ---
+        // --- COMPLETE DATASET ---
         const GAME_DATA = {
             questions: [
-                // NIVEAU 1 (Basis - Trek 1)
+                // NIVEAU 1
                 {id:1, niveau:1, categorie:"Locatie", vraag:"Zijn jullie links of rechts van de Dijle (stroomafwaarts)?"},
                 {id:2, niveau:1, categorie:"Locatie", vraag:"Bevinden jullie je binnen de ring of op de ring zelf?"},
                 {id:3, niveau:1, categorie:"Locatie", vraag:"Is de straatnaam waar jullie zijn langer dan 8 letters?"},
@@ -616,6 +589,19 @@
                         </div>`;
                 });
             }
+
+            // Refresh Seeker list
+            if(myRole === 'seeker') {
+                const activeBtn = document.querySelector('#seeker-view button.ring-2');
+                if(activeBtn) {
+                    // check ID to determine level
+                    if(activeBtn.id === 'btn-lvl-1') filterQuestions(1);
+                    if(activeBtn.id === 'btn-lvl-2') filterQuestions(2);
+                    if(activeBtn.id === 'btn-lvl-3') filterQuestions(3);
+                } else {
+                    filterQuestions(1);
+                }
+            }
         }
 
         // --- TIMER & PENALTY ---
@@ -800,6 +786,17 @@
             const index = allCards.findIndex(c => c.id == cid);
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
         };
+        
+        // --- CLEAR CURSE ---
+        window.clearCurse = (curseKey) => {
+            if(!confirm("Zijn jullie zeker dat deze vloek voorbij is of de taak voltooid is?")) return;
+            remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
+            
+            push(ref(db, `lobbies/${currentLobby}/logs`), {
+                msg: `Vloek opgeheven door zoekers.`,
+                time: Date.now()
+            });
+        };
 
         // ... (Overflow modal functies ook kopiëren van vorige versie) ...
         function showSelectionModal(cards) {
@@ -856,21 +853,48 @@
         window.filterQuestions = (level) => {
             const list = document.getElementById('questions-list');
             list.innerHTML = "";
-            const btns = document.querySelectorAll('#seeker-view button');
-            btns.forEach(b => b.classList.remove('ring-2', 'ring-white'));
-            if(btns[level-1]) btns[level-1].classList.add('ring-2', 'ring-white');
+            
+            // Buttons visual state
+            const btn1 = document.getElementById('btn-lvl-1');
+            const btn2 = document.getElementById('btn-lvl-2');
+            const btn3 = document.getElementById('btn-lvl-3');
+            
+            [btn1, btn2, btn3].forEach(b => {
+                b.classList.remove('ring-2', 'ring-white', 'bg-opacity-100');
+                b.classList.add('bg-opacity-50');
+                b.dataset.active = "false";
+            });
+
+            const activeBtn = level === 1 ? btn1 : level === 2 ? btn2 : btn3;
+            activeBtn.classList.add('ring-2', 'ring-white');
+            activeBtn.dataset.active = "true";
 
             const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
-            if(filtered.length === 0) return list.innerHTML = `<div class="text-gray-500 text-center mt-4">Op.</div>`;
+            if(filtered.length === 0) {
+                 list.innerHTML = `<div class="bg-gray-800/50 p-8 rounded-xl text-center border border-gray-700 border-dashed">
+                    <i class="fa-solid fa-check-circle text-3xl text-gray-600 mb-2"></i>
+                    <div class="text-gray-500 italic">Geen vragen meer in dit niveau.</div>
+                </div>`;
+                return;
+            }
 
             // Grouping logic (simplified)
+            const grouped = {};
             filtered.forEach(q => {
-                const div = document.createElement('div');
-                div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 mt-2";
-                div.onclick = () => askQuestion(q.id);
-                div.innerHTML = `<div class="text-xs font-bold text-gray-400 uppercase">${q.categorie}</div><div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
-                list.appendChild(div);
+                if(!grouped[q.categorie]) grouped[q.categorie] = [];
+                grouped[q.categorie].push(q);
             });
+
+            for (const [cat, questions] of Object.entries(grouped)) {
+                list.innerHTML += `<div class="cat-header">${cat}</div>`;
+                questions.forEach(q => {
+                    const div = document.createElement('div');
+                    div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 mt-2";
+                    div.onclick = () => askQuestion(q.id);
+                    div.innerHTML = `<div class="text-xs font-bold text-gray-400 uppercase">${q.categorie}</div><div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
+                    list.appendChild(div);
+                });
+            }
         };
 
         window.askQuestion = (qid) => {
