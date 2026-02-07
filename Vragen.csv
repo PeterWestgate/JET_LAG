@@ -1,0 +1,76 @@
+id,vraag,niveau,categorie,gebruikt
+1,Bevinden jullie je ten Noorden of ten Zuiden van de Bosstraat?,1,Locatie,FALSE
+2,Is de ondergrond waar jullie staan bestraat (kasseien/tegels) of onverhard?,1,Omgeving,FALSE
+3,Horen jullie op dit moment het geluid van stromend water (de Maas)?,1,Omgeving,FALSE
+4,Zien jullie op dit moment een bus van De Lijn passeren?,1,Omgeving,FALSE
+5,Staan jullie onder een afdak/beschutting of in de open lucht?,1,Omgeving,FALSE
+6,Is de straatnaam waar jullie zijn langer dan 8 letters?,1,Locatie,FALSE
+7,Kunnen jullie een kerktoren zien vanaf jullie plek?,1,Visueel,FALSE
+8,Is het huisnummer van het dichtstbijzijnde gebouw even of oneven?,1,Omgeving,FALSE
+9,Bevinden jullie je binnen de groene ring (Singels/Wallen)?,1,Locatie,FALSE
+10,Zijn er meer dan 5 andere mensen zichtbaar in een straal van 20 meter?,1,Omgeving,FALSE
+11,Is er graffiti of street art zichtbaar vanaf jullie positie?,1,Visueel,FALSE
+12,Is er een fietsenstalling zichtbaar?,1,Omgeving,FALSE
+13,Staan jullie op een helling (dijk) of op vlakke grond?,1,Omgeving,FALSE
+14,Is de dichtstbijzijnde gevel gemaakt van rode baksteen?,1,Visueel,FALSE
+15,Kunnen jullie een verkeerslicht zien vanaf jullie positie?,1,Omgeving,FALSE
+16,Is er een zitbankje binnen 10 meter?,1,Omgeving,FALSE
+17,Zien jullie een bewakingscamera?,1,Omgeving,FALSE
+18,Is de straat waar jullie zijn toegankelijk voor auto's?,1,Locatie,FALSE
+19,Ruik je op dit moment etensgeuren (frituur/wafel/...) ?,1,Zintuig,FALSE
+20,Voel je op dit moment wind?,1,Zintuig,FALSE
+21,Is de dichtstbijzijnde prullenbak groen of grijs?,1,Visueel,FALSE
+22,Zie je op dit moment een hond?,1,Omgeving,FALSE
+23,Hoor je muziek?,1,Audio,FALSE
+24,Sta je op Maaskasseien (ronde kasseien)?,1,Visueel,FALSE
+25,Zie je een vlag wapperen?,1,Visueel,FALSE
+26,Zijn jullie dichter bij de Maasbrug dan bij de Markt?,2,Locatie,FALSE
+27,Stuur een foto van de ondergrond (alleen jullie voeten en de grond).,2,Foto,FALSE
+28,Wat is de eerste letter van de straat waar jullie zijn?,2,Puzzel,FALSE
+29,Stuur een foto van de lucht recht boven jullie.,2,Foto,FALSE
+30,Zijn jullie in een park of op de wallen?,2,Locatie,FALSE
+31,Stuur een foto van het dichtstbijzijnde verkeersbord (zonder straatnaam).,2,Foto,FALSE
+32,Is er een horecazaak (café/restaurant) zichtbaar met een terras?,2,Omgeving,FALSE
+33,Zijn jullie dichter bij het Cultureel Centrum dan bij de Markt?,2,Locatie,FALSE
+34,Stuur een foto van een object dat 'ROOD' is in jullie omgeving.,2,Foto,FALSE
+35,Hoeveel stappen zijn jullie verwijderd van de dichtstbijzijnde vuilnisbak?,2,Puzzel,FALSE
+36,Zijn jullie binnen 200m van een supermarkt?,2,Locatie,FALSE
+37,"Stuur een foto van een textuur in de buurt (muur, schors, paal) van heel dichtbij.",2,Foto,FALSE
+38,Zijn jullie in de buurt van een school (Ursulinen/H. Kruis)?,2,Locatie,FALSE
+39,Wat is de kleur van de voordeur die het dichtst bij is?,2,Visueel,FALSE
+40,Stuur een foto van jullie eigen schaduw op de grond.,2,Foto,FALSE
+41,Zijn jullie ten Oosten of ten Westen van de Bleumerstraat?,2,Locatie,FALSE
+42,"Stuur een foto van een reflectie (in raam, plas, zonnebril).",2,Foto,FALSE
+43,Welke letter komt het vaakst voor op de borden om je heen?,2,Puzzel,FALSE
+44,Zie je een fiets die fout geparkeerd staat?,2,Omgeving,FALSE
+45,Is de straatverlichting hangend aan een draad of op een paal?,2,Visueel,FALSE
+46,Stuur een foto van een 'rond' object in je omgeving.,2,Foto,FALSE
+47,Tel het aantal ramen op de begane grond van het gebouw tegenover je.,2,Puzzel,FALSE
+48,Zie je iemand die een bril draagt?,2,Observatie,FALSE
+49,Is de dichtstbijzijnde gevel wit geverfd (historisch pand)?,2,Visueel,FALSE
+50,Stuur een foto van iets dat van metaal is gemaakt.,2,Foto,FALSE
+51,Stuur een foto van het uitzicht op ooghoogte (zonder jullie zelf).,3,Risico,FALSE
+52,Stuur een geluidsopname van 15 seconden van de omgeving.,3,Risico,FALSE
+53,"Geef de naam van de dichtstbijzijnde winkel, café of openbaar gebouw.",3,Risico,FALSE
+54,Loop naar de dichtstbijzijnde hoek en stuur een foto van wat je daar ziet.,3,Risico,FALSE
+55,Zijn jullie binnen een straal van 150m van het standbeeld van Van Eyck?,3,Risico,FALSE
+56,Stuur een 360 graden panoramafoto (hiders mogen gezicht verbergen).,3,Risico,FALSE
+57,Wat is de laatste letter van de straatnaam waar jullie zijn?,3,Risico,FALSE
+58,Film 5 seconden lang de grond terwijl je ronddraait.,3,Risico,FALSE
+59,Geef een beschrijving van de persoon die het dichtst bij jullie staat (niet-speler).,3,Risico,FALSE
+60,Teken een ruwe schets van de plattegrond van jullie directe omgeving en stuur de foto.,3,Risico,FALSE
+61,Stuur een foto van het hoogste punt dat jullie kunnen zien.,3,Risico,FALSE
+62,Hoeveel ramen heeft het gebouw recht tegenover jullie?,3,Risico,FALSE
+63,Stuur een foto van een object dat begint met de letter 'S'.,3,Risico,FALSE
+64,Zijn jullie binnen de oude stadskern (binnen de wallen)?,3,Risico,FALSE
+65,Beschrijf de schoenen van de dichtstbijzijnde voorbijganger.,3,Risico,FALSE
+66,Wat is het laatste cijfer van het dichtstbijzijnde huisnummer?,3,Risico,FALSE
+67,"Stuur een foto van een patroon (kasseien, hekwerk) in de buurt.",3,Risico,FALSE
+68,Hoeveel stappen ben je van de dichtstbijzijnde straathoek?,3,Risico,FALSE
+69,Zie je een 'Verboden' bord? Welke kleur?,3,Risico,FALSE
+70,Stuur een close-up van iets dat van hout is.,3,Risico,FALSE
+71,Is er constructie/wegenwerken zichtbaar?,3,Risico,FALSE
+72,"Zie je een uniform (politie, post, lijn)?",3,Risico,FALSE
+73,Stuur een foto van iets ouds/historisch (detail).,3,Risico,FALSE
+74,Stuur een foto van iets moderns/nieuws.,3,Risico,FALSE
+75,Beschrijf de geur van de omgeving in 1 woord.,3,Risico,FALSE

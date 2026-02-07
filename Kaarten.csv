@@ -1,0 +1,74 @@
+id,type,naam,effect,taak
+1,Tijd,Bonus 5 Min,Eindtijd + 5 minuten.,Geen taak.
+2,Tijd,Bonus 5 Min,Eindtijd + 5 minuten.,Geen taak.
+3,Tijd,Bonus 5 Min,Eindtijd + 5 minuten.,Geen taak.
+4,Tijd,Bonus 5 Min,Eindtijd + 5 minuten.,Geen taak.
+5,Tijd,Bonus 5 Min,Eindtijd + 5 minuten.,Geen taak.
+6,Tijd,Bonus 10 Min,Eindtijd + 10 minuten.,Geen taak.
+7,Tijd,Bonus 10 Min,Eindtijd + 10 minuten.,Geen taak.
+8,Tijd,Bonus 10 Min,Eindtijd + 10 minuten.,Geen taak.
+9,Tijd,Bonus 15 Min,Eindtijd + 15 minuten.,Geen taak.
+10,Tijd,Bonus 15 Min,Eindtijd + 15 minuten.,Geen taak.
+11,Vloek,Freeze (2 min),Zoekers moeten direct 2 minuten stilstaan.,Maak een selfie met een standbeeld (of paal).
+12,Vloek,De Snack Pauze,Zoekers moeten een snack kopen/eten.,Overtuig een vreemde om te zwaaien.
+13,Vloek,Achteruit,Zoekers moeten de volgende straat achteruit lopen.,Film 30 sec moonwalken.
+14,Vloek,Hand in Hand,Zoekers lopen 5 min hand in hand.,Knoop elkaars veters aan elkaar.
+15,Vloek,Op één been,Zoekers wachten 1 min op één been.,Sta 1 min op één been als een flamingo.
+16,Vloek,Selfie Time,Zoekers moeten selfie maken met vreemde.,Maak zelf ook een selfie met vreemde.
+17,Vloek,De Vloer is Lava,Zoekers mogen 3 min straat niet raken.,"Klim ergens op (muurtje, bankje)."
+18,Vloek,Slow Motion,Zoekers bewegen 2 min in slow-mo.,Film een slow-motion vechtscène.
+19,Vloek,Tas Wissel,Zoekers wisselen rugzak/jas (10 min).,Doe je schoenen aan de verkeerde voeten.
+20,Vloek,Sprintje,Zoekers trekken sprintje van 50m.,Doe 20 jumping jacks.
+21,Vloek,Omweg Standbeeld,Zoekers lopen naar Van Eyck (Markt).,Zing luidkeels het volkslied.
+22,Vloek,Vraag Weigeren,Annuleer huidige vraag.,"Bouw toren van 5 objecten (stenen, takjes)."
+23,Vloek,Vraag Weigeren,Annuleer huidige vraag.,Bouw toren van 5 objecten.
+24,Vloek,Splitsing,Zoekers gaan 200m uit elkaar (10 min).,Doe je jas binnenstebuiten aan.
+25,Vloek,Links Afslaan,Zoekers slaan enkel links af (5 min).,Draai 10 rondjes om je as.
+26,Vloek,Geen Maps,Zoekers: 5 min geen Google Maps.,Teken een portret van elkaar in 30 sec.
+27,Vloek,De Polonaise,Zoekers lopen 2 min in polonaise.,Doe de kabouterdans met bewegingen.
+28,Vloek,Vogelspotter,Zoekers moeten duif/eend (Maas) fotograferen.,Doe een vogel na (geluid + wapperen).
+29,Vloek,Bus Roulette,Zoekers nemen bus voor 1 halte (indien mogelijk).,Film 1 minuut Macarena dansen.
+30,Vloek,De Noodklok,Zoekers moeten kerkdeur aanraken.,Draag een gedicht voor over de zoekers.
+31,Vloek,Blinddoek,1 Zoeker wordt 5 min geblinddoekt.,Sta 1 minuut roerloos stil als standbeeld.
+32,Vloek,De Toerist,Zoekers vragen weg aan voorbijganger.,Spreek voorbijganger aan en wens ze een fijne dag.
+33,Vloek,Waterdrager,Zoekers moeten flesje water atten.,Doe 10 push-ups in het openbaar.
+34,Vloek,Papegaai,Zoekers herhalen alles wat 1 iemand zegt (5m).,Praat 1 min tegen lantaarnpaal.
+35,Vloek,Hinkelen,Zoekers moeten 50m hinkelen.,Hinkelen zelf 1 minuut.
+36,Vloek,Stilte (5 min),Zoekers niet praten/typen.,Wees 5 minuten doodstil (geen geluid).
+37,Vloek,De Mol,Zoekers delen 5 min live locatie.,Zoek een foto van een mol op Google.
+38,Vloek,Alleen Fietsen,Zoekers moeten 15 min alles fietsen.,"Sta 3 minuten rug-aan-rug, ogen dicht."
+39,Vloek,Alleen Lopen,Zoekers moeten 15 min alles lopen.,Zing 1 minuut luidkeels een lied.
+40,Vloek,Brug Tol,Binnen 5 min andere brug oversteken (indien mogelijk).,"Maak een ""brug"" met lichaam (30s)."
+41,Vloek,Omweg Markt,Zoekers moeten naar de Markt.,Vind object met letter 'O'.
+42,Vloek,Oriëntatie,Zoekers 10 min geen kompas/draaien.,Draai 1 min langzaam rondjes.
+43,Vloek,Pad Blokkeren,Kies straat waar zoekers niet in mogen (20m).,Bouw barricade van takjes.
+44,Vloek,Stille Zone,Zoekers 15 min niet praten/typen.,Wees 5 min doodstil.
+45,Vloek,Tijdelijke Afleiding,Hiders bellen zoekers 1 min.,Verkoop product zonder 'uhm' te zeggen.
+46,Vloek,Rode Licht,Wachten bij elk rood licht (ook spooklichten).,Doe 20 Jumping Jacks.
+47,Vloek,Veter Foltering,1 Zoeker moet veters opnieuw strikken.,Doe schoenen verkeerd om aan.
+48,Vloek,Kunst Jacht,Zoekers moeten kunstwerk vinden.,Bedenk raadsel over locatie.
+49,Vloek,Verkeerde Afslag,Zoekers moeten 200m teruglopen.,Loop 3 min achteruit in cirkel.
+50,Vloek,Lied van Maaseik,Zoekers zingen lied over Maaseik.,Doe een dier na (1 min).
+51,Vloek,Zoeker Afleiden,Zoekers dansen Macarena.,Dans Macarena zonder muziek.
+52,Vloek,Zoeker Ruil,Zoekers wisselen jas/tas (10 min).,Trek sokken over broekspijpen.
+53,Vloek,Ruisonderdrukking,Hiders wachten 10 min met antwoord.,"Zit 2 min vingers in oren, ogen dicht."
+54,Vloek,Vertraging,Zoekers 2 min stilstaan.,Doe maanlanding in slow-mo.
+55,Vloek,Verwarring,Zoekers 5 min naar Noorden lopen.,Wijs 1 min naar willekeurige richtingen.
+56,Bonus,Locatie Wissel,Hiders verplaatsen zich 5 min (rennend).,"Roep ""WIJ ZIJN BANG""."
+57,Bonus,De Mime,"Zoekers zwijgen 10 min, enkel gebaren.",Beeld film uit (zoekers raden).
+58,Bonus,De Leugen,Lieg op de VOLGENDE vraag.,Eet iets zuurs/vies (veilig).
+59,Bonus,Mist,Zoekers mogen 15 min GEEN vragen stellen.,Houd 1 min elkaars hand vast.
+60,Bonus,Camouflage,Stuur foto ander persoon bij beschrijving.,Verberg gezicht volledig (5 min).
+61,Bonus,Radar Jammer,Zoekers zetten live locatie uit (10 min).,"Roep 10x ""KEKO KEKO!""."
+62,Bonus,Safehouse,Zoekers wachten 2 min voor tikken.,Maak kunstwerk van afval.
+63,Bonus,Copycat,Kopieer effect van vorige kaart nog eens.,"Doe de vorige opdracht nog eens, maar 2x sneller."
+64,Bonus,Herpositioneren,Hiders verplaatsen 2 min (Nieuwe plek).,"Roep ""WIJ VERPLAATSEN""."
+65,Bonus,Noodontsnapping,Verplaats 50m (als zoekers <100m).,Ren rondje om verstopplek.
+66,Bonus,Onzichtbaar,2 min radiostilte.,Lig 1 min plat op de grond.
+67,Bonus,Souvenir,Zoekers kopen souvenir voor hiders.,Maak bedankvideo.
+68,Bonus,Snelle Ontsnapping,Verplaats 200m (Immobiliteit verbroken).,Foto van voeten in de lucht.
+69,Bonus,Stealth Modus,10 min geen vragen.,Fluister 1 minuut lang.
+70,Bonus,Tijd Rekken,Zoekers wachten 5 min extra op antwoord.,Tel hardop tot 60 in Engels.
+71,Bonus,Upgrade,"Huidige plek ""Extra Goed"" (+10 min).",Maak reclamepraatje over plek.
+72,Bonus,Vraag Blok,Weiger huidige vraag.,Bouw kaartenhuis.
+73,Bonus,Trekken,"Gooi kaarten weg, trek nieuwe.",Schud denkbeeldige kaarten (30s).
