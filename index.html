@@ -4,16 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leuven Hide & Seek</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons (Fixed Version) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #111827; color: #f3f4f6; }
-        .card-jetlag { background: #1f2937; border-left: 4px solid #fbbf24; transition: transform 0.1s; }
-        .card-jetlag:active { transform: scale(0.98); }
-        .btn-primary { background-color: #fbbf24; color: #1a1a1a; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #111827; color: #f3f4f6; }
         
-        /* Categorie headers */
-        .cat-header { background-color: #374151; color: #fbbf24; font-weight: bold; padding: 8px 12px; border-radius: 6px; margin-top: 16px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #fbbf24; }
+        /* Card Styling */
+        .card-jetlag { background: #1f2937; border-left: 4px solid #fbbf24; transition: transform 0.1s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .card-jetlag:active { transform: scale(0.98); }
+        
+        /* Buttons */
+        .btn-primary { background-color: #fbbf24; color: #1a1a1a; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
+        .btn-primary:hover { background-color: #f59e0b; transform: translateY(-1px); }
+        
+        /* Categorie Headers */
+        .cat-header { 
+            background-color: #374151; 
+            color: #fbbf24; 
+            font-weight: bold; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            margin-top: 16px; 
+            margin-bottom: 8px;
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            border-bottom: 2px solid #fbbf24;
+            display: flex;
+            align-items: center;
+        }
 
         /* Animaties */
         @keyframes pulse-red {
@@ -22,9 +43,8 @@
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         .curse-active { animation: pulse-red 2s infinite; border: 2px solid #ef4444; }
-        .disabled-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; border-radius: inherit; z-index: 10; }
         
-        /* Scrollbar styling */
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #1f2937; }
         ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
@@ -35,7 +55,7 @@
     <!-- LOGIN SCREEN -->
     <div id="login-screen" class="w-full max-w-md space-y-8 mt-10">
         <div class="text-center space-y-2">
-            <i class="fa-solid fa-map-location-dot text-6xl text-yellow-400 mb-4"></i>
+            <i class="fa-solid fa-map-location-dot text-6xl text-yellow-400 mb-4 animate-bounce"></i>
             <h1 class="text-5xl font-black text-white tracking-tighter">LEUVEN<br><span class="text-yellow-400">HIDE & SEEK</span></h1>
         </div>
         
@@ -56,19 +76,20 @@
     <div id="role-screen" class="hidden w-full max-w-md space-y-6 mt-10 text-center">
         <h2 class="text-3xl font-black text-white">KIES JE TEAM</h2>
         <div class="grid grid-cols-2 gap-4">
-            <button onclick="selectRole('hider')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-yellow-400 transition-all group">
-                <i class="fa-solid fa-user-secret text-5xl text-gray-500 group-hover:text-yellow-400 mb-4"></i>
+            <button onclick="selectRole('hider')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-yellow-400 transition-all group hover:bg-gray-700">
+                <i class="fa-solid fa-user-secret text-5xl text-gray-500 group-hover:text-yellow-400 mb-4 transition-colors"></i>
                 <div class="font-black text-xl text-white">HIDER</div>
             </button>
-            <button onclick="selectRole('seeker')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-blue-400 transition-all group">
-                <i class="fa-solid fa-binoculars text-5xl text-gray-500 group-hover:text-blue-400 mb-4"></i>
+            <button onclick="selectRole('seeker')" class="bg-gray-800 p-8 rounded-2xl border-2 border-gray-700 hover:border-blue-400 transition-all group hover:bg-gray-700">
+                <i class="fa-solid fa-binoculars text-5xl text-gray-500 group-hover:text-blue-400 mb-4 transition-colors"></i>
                 <div class="font-black text-xl text-white">ZOEKER</div>
             </button>
         </div>
     </div>
 
     <!-- GAME DASHBOARD -->
-    <div id="game-screen" class="hidden w-full max-w-lg space-y-4 pb-24">
+    <div id="game-screen" class="hidden w-full max-w-lg space-y-4 pb-24 relative">
+        
         <!-- Header & Stats -->
         <div class="bg-gray-800/90 backdrop-blur p-4 rounded-xl sticky top-2 z-40 shadow-lg border border-gray-700">
             <div class="flex justify-between items-center mb-2">
@@ -82,7 +103,7 @@
                 <div id="role-badge" class="px-3 py-1 rounded-full font-black text-[10px] tracking-wider border border-white/10"></div>
             </div>
             <!-- Penalty Display -->
-            <div class="flex justify-between bg-black/40 p-2 rounded text-xs font-mono">
+            <div class="flex justify-between bg-black/40 p-2 rounded text-xs font-mono border border-white/5">
                 <span class="text-gray-400">STRAFTIJD:</span>
                 <span id="penalty-display" class="text-red-400 font-bold">0 min</span>
             </div>
@@ -97,7 +118,7 @@
         <!-- CURSE OVERLAY (For Seekers) -->
         <div id="curse-overlay" class="hidden fixed inset-0 z-50 bg-red-950/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center space-y-6 overflow-y-auto">
             <div class="bg-gray-900 p-6 rounded-2xl border-2 border-red-500 shadow-2xl w-full max-w-md">
-                <i class="fa-solid fa-triangle-exclamation text-6xl text-red-500 mb-4"></i>
+                <i class="fa-solid fa-triangle-exclamation text-6xl text-red-500 mb-4 animate-pulse"></i>
                 <h2 class="text-3xl font-black text-white mb-2 uppercase">Vloek Actief!</h2>
                 <div id="active-curses-list" class="space-y-4 text-left"></div>
             </div>
@@ -112,9 +133,14 @@
                 <h3 id="current-question-text" class="font-bold text-xl text-white">...</h3>
                 <div class="text-xs text-blue-200">Niveau <span id="current-question-level"></span></div>
                 
-                <button onclick="openAnswerModal('question')" class="w-full bg-white text-blue-900 font-bold p-4 rounded-xl shadow-lg hover:bg-blue-50 transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-paper-plane"></i>
-                    <span>BEANTWOORDEN & TREKKEN</span>
+                <div class="bg-blue-950/50 p-3 rounded text-sm text-blue-200 italic">
+                    1. Stuur antwoord/foto in WhatsApp.<br>
+                    2. Klik dan op de knop hieronder.
+                </div>
+
+                <button onclick="confirmAnswer()" class="w-full bg-white text-blue-900 font-bold p-4 rounded-xl shadow-lg hover:bg-blue-50 transition flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Antwoord Verstuurd</span>
                 </button>
             </div>
 
@@ -131,7 +157,7 @@
         <!-- SEEKER VIEW -->
         <div id="seeker-view" class="hidden space-y-4 relative">
             <!-- Block overlay when status is not idle -->
-            <div id="seeker-lock" class="hidden absolute inset-0 bg-gray-900/95 z-20 flex flex-col items-center justify-center text-center p-4 rounded-xl backdrop-blur-sm border-2 border-gray-700">
+            <div id="seeker-lock" class="hidden absolute inset-0 bg-gray-900/95 z-20 flex flex-col items-center justify-center text-center p-4 rounded-xl backdrop-blur-sm border-2 border-gray-700 h-full">
                 <i class="fa-solid fa-spinner fa-spin text-4xl text-blue-500 mb-4"></i>
                 <p class="font-bold text-white text-lg">Wachten op Hiders...</p>
                 <p class="text-xs text-gray-400 mt-2">Zij moeten de vraag beantwoorden.</p>
@@ -139,42 +165,18 @@
 
             <div class="bg-gray-800 p-2 rounded-2xl border border-gray-700 sticky top-[85px] z-10 shadow-xl">
                 <div class="flex space-x-1">
-                    <button onclick="filterQuestions(1)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase" id="btn-lvl-1">Niveau 1</button>
-                    <button onclick="filterQuestions(2)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase" id="btn-lvl-2">Niveau 2</button>
-                    <button onclick="filterQuestions(3)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase" id="btn-lvl-3">Niveau 3</button>
+                    <button onclick="filterQuestions(1)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase transition-all" id="btn-lvl-1">Niveau 1</button>
+                    <button onclick="filterQuestions(2)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase transition-all" id="btn-lvl-2">Niveau 2</button>
+                    <button onclick="filterQuestions(3)" class="flex-1 py-3 rounded-xl bg-gray-700 text-gray-400 text-xs font-bold uppercase transition-all" id="btn-lvl-3">Niveau 3</button>
                 </div>
             </div>
-            <div id="questions-list" class="space-y-2 pb-10"></div>
+            <div id="questions-list" class="space-y-2 pb-20"></div>
         </div>
 
         <!-- LOG -->
-        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
-            <h3 class="font-bold mb-3 text-gray-500 text-[10px] uppercase tracking-widest">Logboek</h3>
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mt-8">
+            <h3 class="font-bold mb-3 text-gray-500 text-[10px] uppercase tracking-widest"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Logboek</h3>
             <div id="game-log" class="text-xs space-y-2 h-40 overflow-y-auto text-gray-300 font-mono scrollbar-thin"></div>
-        </div>
-    </div>
-
-    <!-- ANSWER / UPLOAD MODAL -->
-    <div id="answer-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur flex items-center justify-center p-4 z-[60]">
-        <div class="bg-gray-900 w-full max-w-md rounded-2xl p-6 space-y-4 border border-blue-500">
-            <h3 class="text-xl font-bold text-white" id="answer-modal-title">Antwoorden</h3>
-            
-            <div>
-                <label class="text-xs text-gray-400 uppercase font-bold">Tekst Antwoord</label>
-                <textarea id="answer-text" class="w-full bg-gray-800 text-white p-3 rounded mt-1 h-24 border border-gray-700 focus:border-blue-500 outline-none"></textarea>
-            </div>
-
-            <div>
-                <label class="text-xs text-gray-400 uppercase font-bold">Foto/Video (Optioneel)</label>
-                <input type="file" id="answer-file" accept="image/*,video/*" class="w-full bg-gray-800 text-gray-300 text-xs p-2 rounded mt-1 border border-gray-700">
-                <p class="text-[10px] text-gray-500 mt-1">Wordt geüpload naar GitHub. Max 5MB aanbevolen.</p>
-            </div>
-
-            <button id="btn-send-answer" onclick="submitAnswer()" class="w-full btn-primary p-3 rounded-lg flex justify-center items-center">
-                <span id="btn-send-text">VERSTUREN</span>
-                <i id="btn-send-loader" class="fa-solid fa-spinner fa-spin ml-2 hidden"></i>
-            </button>
-            <button onclick="closeAnswerModal()" class="w-full text-gray-500 text-xs py-2">Annuleren</button>
         </div>
     </div>
 
@@ -204,14 +206,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, update, push, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        // --- GITHUB CONFIG ---
-        const GITHUB_CONFIG = {
-            token: "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", 
-            owner: "PeterWestgate",
-            repo: "JET_LAG", 
-            path: "uploads"
-        };
 
         // --- FIREBASE CONFIG ---
         const firebaseConfig = {
@@ -267,6 +261,10 @@
                 {id:33, niveau:1, categorie:"Zintuig", vraag:"Voel je op dit moment wind?"},
                 {id:34, niveau:1, categorie:"Audio", vraag:"Hoor je muziek?"},
                 {id:35, niveau:1, categorie:"Audio", vraag:"Hoor je sirenes?"},
+                {id:106, niveau:1, categorie:"Locatie", vraag:"Zijn jullie bij (max 20m) een van de 4 hoofdstraten?"},
+                {id:107, niveau:1, categorie:"Locatie", vraag:"Is jullie verstopplek MEER dan 500m van de Grote Markt?"},
+                {id:108, niveau:1, categorie:"Locatie", vraag:"Is jullie verstopplek binnen 150m van de dichtstbijzijnde kerk?"},
+                {id:109, niveau:1, categorie:"Locatie", vraag:"Is jullie verstopplek dichter bij het Klein Begijnhof dan het Groot Begijnhof?"},
 
                 // NIVEAU 2 (Specifiek - Trek 2 Kies 1)
                 {id:36, niveau:2, categorie:"Locatie", vraag:"Zijn jullie dichter bij het Station dan bij de Grote Markt?"},
@@ -277,6 +275,12 @@
                 {id:41, niveau:2, categorie:"Locatie", vraag:"Zijn jullie ten Oosten of ten Westen van de Naamsestraat?"},
                 {id:42, niveau:2, categorie:"Locatie", vraag:"Is je verstopplek binnen 250m van de Hoorn?"},
                 {id:43, niveau:2, categorie:"Locatie", vraag:"Is je verstopplek dichter bij de Kruidtuin dan bij de Oude Markt?"},
+                {id:110, niveau:2, categorie:"Locatie", vraag:"Is jullie verstopplek binnen 250m van de Grote Markt?"},
+                {id:111, niveau:2, categorie:"Locatie", vraag:"Is jullie verstopplek binnen 250m van het Station?"},
+                {id:112, niveau:2, categorie:"Locatie", vraag:"Is jullie verstopplek binnen 250m van de Bibliotheek?"},
+                {id:113, niveau:2, categorie:"Locatie", vraag:"Is jullie verstopplek binnen 250m van het Groot Begijnhof?"},
+                {id:114, niveau:2, categorie:"Locatie", vraag:"Bevindt jullie verstopplek zich aan de Vaartkom?"},
+                {id:115, niveau:2, categorie:"Locatie", vraag:"Is jullie verstopplek binnen 100m van de Dijle?"},
                 {id:44, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de ondergrond (alleen jullie voeten en de grond)."},
                 {id:45, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de lucht recht boven jullie."},
                 {id:46, niveau:2, categorie:"Foto", vraag:"Stuur een foto van het dichtstbijzijnde verkeersbord (zonder straatnaam)."},
@@ -298,6 +302,8 @@
                 {id:62, niveau:2, categorie:"Omgeving", vraag:"Zie je een kinderwagen?"},
                 {id:63, niveau:2, categorie:"Omgeving", vraag:"Is het gebouw achter je hoger dan 3 verdiepingen?"},
                 {id:64, niveau:2, categorie:"Omgeving", vraag:"Is er glasafval of zwerfvuil zichtbaar?"},
+                {id:116, niveau:2, categorie:"Omgeving", vraag:"Zijn er mensen die jullie verstopplek passeren (min. 1 per minuut)?"},
+                {id:117, niveau:2, categorie:"Omgeving", vraag:"Bevindt jullie verstopplek zich op een locatie met kasseien?"},
                 {id:65, niveau:2, categorie:"Visueel", vraag:"Wat is de kleur van de voordeur die het dichtst bij is?"},
                 {id:66, niveau:2, categorie:"Visueel", vraag:"Is de straatverlichting hangend aan een draad of op een paal?"},
                 {id:67, niveau:2, categorie:"Visueel", vraag:"Is de dichtstbijzijnde gevel wit geverfd?"},
@@ -340,7 +346,13 @@
                 {id:102, niveau:3, categorie:"Risico", vraag:"Stuur een foto van een plant of bloem in de buurt."},
                 {id:103, niveau:3, categorie:"Risico", vraag:"Zie je een brievenbus van Bpost?"},
                 {id:104, niveau:3, categorie:"Risico", vraag:"Stuur een foto van een straatnaambord (TEKST ONZICHTBAAR MAKEN)."},
-                {id:105, niveau:3, categorie:"Risico", vraag:"Stuur een foto van een object groter dan 1x1x1m in directe omgeving."}
+                {id:105, niveau:3, categorie:"Risico", vraag:"Stuur een foto van een object groter dan 1x1x1m in directe omgeving."},
+                {id:118, niveau:3, categorie:"Precies", vraag:"Is je verstopplek in het zicht van bomen?"},
+                {id:119, niveau:3, categorie:"Precies", vraag:"Is je verstopplek in het zicht van water?"},
+                {id:120, niveau:3, categorie:"Precies", vraag:"Is het dichtstbijzijnde gebouw een winkel?"},
+                {id:121, niveau:3, categorie:"Precies", vraag:"Is het dichtstbijzijnde gebouw een kerk?"},
+                {id:122, niveau:3, categorie:"Precies", vraag:"Kan je vanuit je verstopplek een café zien?"},
+                {id:123, niveau:3, categorie:"Precies", vraag:"Kun je vanaf je verstopplek een bus zien langskomen?"}
             ],
             deck: [
                 // TIJD (15 kaarten)
@@ -349,7 +361,7 @@
                 {id:3, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
                 {id:4, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
                 {id:5, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
-                {id:6, type:"Tijd", naam:"Bonus 5 Min", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:6, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
                 {id:7, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
                 {id:8, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
                 {id:9, type:"Tijd", naam:"Bonus 10 Min", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
@@ -438,7 +450,7 @@
         let gameState = {};
         let activeCurses = [];
         let timerInterval = null;
-        let currentModalContext = null; // 'question' or 'curse_ID'
+        let currentModalContext = null;
 
         // --- AUTH & LOBBY ---
         window.joinLobby = async () => {
@@ -464,7 +476,7 @@
                         created: serverTimestamp(),
                         questions: GAME_DATA.questions,
                         deck: GAME_DATA.deck,
-                        status: 'idle', // idle, answering
+                        status: 'idle',
                         penaltyTime: 0,
                         logs: { "init": { msg: `Lobby ${lobby} gestart`, time: Date.now() } }
                     });
@@ -594,7 +606,6 @@
             if(myRole === 'seeker') {
                 const activeBtn = document.querySelector('#seeker-view button.ring-2');
                 if(activeBtn) {
-                    // check ID to determine level
                     if(activeBtn.id === 'btn-lvl-1') filterQuestions(1);
                     if(activeBtn.id === 'btn-lvl-2') filterQuestions(2);
                     if(activeBtn.id === 'btn-lvl-3') filterQuestions(3);
@@ -642,53 +653,19 @@
             const text = document.getElementById('answer-text').value;
             const fileInput = document.getElementById('answer-file');
             const btn = document.getElementById('btn-send-answer');
-            const loader = document.getElementById('btn-send-loader');
-            const btnText = document.getElementById('btn-send-text');
 
             if(!text && fileInput.files.length === 0) return alert("Vul iets in of kies een bestand.");
 
             // UI Loading state
             btn.disabled = true;
-            btnText.innerText = "UPLOADING...";
-            loader.classList.remove('hidden');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> VERSTUREN...';
 
             let mediaUrl = "";
 
-            // GitHub Upload Logic
+            // Simpel: Als er een bestand is, stuur een bericht dat het via Whatsapp moet
             if(fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                
-                try {
-                    const contentBase64 = await new Promise((resolve, reject) => {
-                        reader.onload = e => resolve(e.target.result.split(',')[1]);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-
-                    const fileName = `${Date.now()}_${file.name}`;
-                    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}/${fileName}`;
-                    
-                    const res = await fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_CONFIG.token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Upload from game by ${currentUser.name}`,
-                            content: contentBase64
-                        })
-                    });
-
-                    if(!res.ok) throw new Error("GitHub Upload Failed");
-                    const json = await res.json();
-                    mediaUrl = json.content.download_url; // Direct link
-
-                } catch (e) {
-                    console.error(e);
-                    alert("Upload mislukt! Check console/token. Tekst wordt wel verstuurd.");
-                }
+                 // We gebruiken nu GEEN upload meer, gewoon melding in logboek
+                 mediaUrl = "(Foto verstuurd via WhatsApp)";
             }
 
             // Process Logic based on Context
@@ -704,7 +681,7 @@
                 }
 
                 // Log Answer
-                const msg = `ANTWOORD: ${text} ${mediaUrl ? `[BEKIJK MEDIA](${mediaUrl})` : ''} ${penaltyAdded ? '(+10 MIN STRAF!)' : ''}`;
+                const msg = `ANTWOORD: ${text} ${mediaUrl} ${penaltyAdded ? '(+10 MIN STRAF!)' : ''}`;
                 push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
 
                 // Draw Cards Logic
@@ -720,18 +697,17 @@
                 const curseKey = currentModalContext.split('_')[1];
                 remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
                 
-                const msg = `VLOEK OPGELOST: ${text} ${mediaUrl ? `[BEWIJS](${mediaUrl})` : ''}`;
+                const msg = `VLOEK OPGELOST: ${text} ${mediaUrl}`;
                 push(ref(db, `lobbies/${currentLobby}/logs`), { msg: msg, time: Date.now() });
                 closeAnswerModal();
             }
 
             // Reset UI
             btn.disabled = false;
-            btnText.innerText = "VERSTUREN";
-            loader.classList.add('hidden');
+            btn.innerText = "VERSTUREN";
         };
 
-        // --- CARD DRAW LOGIC (Hergebruik van vorige keer, maar robuust) ---
+        // --- CARD DRAW LOGIC ---
         function initiateDraw(amount) {
             const deck = allCards.filter(c => !c.status || c.status === 'deck');
             const selection = [];
@@ -752,8 +728,6 @@
             }
         }
 
-        // ... (De rest van de kaart logica: showSelectionModal, showOverflowModal, addToHand, playCard, discardCard blijft hetzelfde als vorige versie, maar playCard voegt toe aan activeCurses) ...
-        
         function addToHand(cid) {
             const index = allCards.findIndex(c => c.id == cid);
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'hand' });
@@ -774,8 +748,6 @@
             
             if(card.type === 'Vloek') {
                 push(ref(db, `lobbies/${currentLobby}/activeCurses`), card);
-            } else if (card.type === 'Tijd') {
-                // Tijd bonus logica kan hier (bv penalty verminderen)
             }
             
             push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `KAART GESPEELD: ${card.naam}`, time: Date.now() });
@@ -787,18 +759,12 @@
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
         };
         
-        // --- CLEAR CURSE ---
         window.clearCurse = (curseKey) => {
             if(!confirm("Zijn jullie zeker dat deze vloek voorbij is of de taak voltooid is?")) return;
             remove(ref(db, `lobbies/${currentLobby}/activeCurses/${curseKey}`));
-            
-            push(ref(db, `lobbies/${currentLobby}/logs`), {
-                msg: `Vloek opgeheven door zoekers.`,
-                time: Date.now()
-            });
+            push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `Vloek opgeheven door zoekers.`, time: Date.now() });
         };
 
-        // ... (Overflow modal functies ook kopiëren van vorige versie) ...
         function showSelectionModal(cards) {
             const modal = document.getElementById('card-modal');
             const container = document.getElementById('modal-cards');
@@ -832,7 +798,6 @@
                     addToHandSilent(c.id); 
                     alert("Toegevoegd. Gooi nu eentje weg.");
                     modal.classList.add('hidden');
-                    // In real implementation force discard logic here
                 };
                 newContainer.appendChild(div);
             });
@@ -854,13 +819,14 @@
             const list = document.getElementById('questions-list');
             list.innerHTML = "";
             const btns = document.querySelectorAll('#seeker-view button');
-            btns.forEach(b => b.classList.remove('ring-2', 'ring-white'));
-            if(btns[level-1]) btns[level-1].classList.add('ring-2', 'ring-white');
+            btns.forEach(b => b.classList.remove('ring-2', 'ring-white', 'bg-opacity-100'));
+            const activeBtn = level === 1 ? document.getElementById('btn-lvl-1') : level === 2 ? document.getElementById('btn-lvl-2') : document.getElementById('btn-lvl-3');
+            activeBtn.classList.add('ring-2', 'ring-white');
 
             const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
-            if(filtered.length === 0) return list.innerHTML = `<div class="text-gray-500 text-center mt-4">Op.</div>`;
+            if(filtered.length === 0) return list.innerHTML = `<div class="text-gray-500 text-center mt-4">Geen vragen meer.</div>`;
 
-            // Grouping logic (simplified)
+            // Grouping
             const grouped = {};
             filtered.forEach(q => {
                 if(!grouped[q.categorie]) grouped[q.categorie] = [];
@@ -873,7 +839,7 @@
                     const div = document.createElement('div');
                     div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 mt-2";
                     div.onclick = () => askQuestion(q.id);
-                    div.innerHTML = `<div class="text-xs font-bold text-gray-400 uppercase">${q.categorie}</div><div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
+                    div.innerHTML = `<div class="text-sm font-bold text-gray-200">${q.vraag}</div>`;
                     list.appendChild(div);
                 });
             }
@@ -894,18 +860,17 @@
             push(ref(db, `lobbies/${currentLobby}/logs`), { msg: `VRAAG: ${allQuestions[index].vraag}`, time: Date.now() });
         };
 
+        window.confirmAnswer = () => {
+             // Just trigger the modal for hider to type answer
+             openAnswerModal('question');
+        };
+
         function updateLogs(logsObj) {
             const logDiv = document.getElementById('game-log');
             logDiv.innerHTML = "";
             Object.values(logsObj).sort((a,b) => b.time - a.time).forEach(l => {
                 const time = new Date(l.time).toTimeString().substr(0,5);
-                // Check if log contains markdown link [text](url)
-                let msg = l.msg;
-                const linkMatch = msg.match(/\[(.*?)\]\((.*?)\)/);
-                if(linkMatch) {
-                    msg = msg.replace(linkMatch[0], `<a href="${linkMatch[2]}" target="_blank" class="text-blue-400 underline">${linkMatch[1]}</a>`);
-                }
-                logDiv.innerHTML += `<div class="border-b border-gray-700 pb-1 mb-1"><span class="text-gray-500 text-[10px]">${time}</span> ${msg}</div>`;
+                logDiv.innerHTML += `<div class="border-b border-gray-700 pb-1 mb-1"><span class="text-gray-500 text-[10px]">${time}</span> ${l.msg}</div>`;
             });
         }
 
@@ -919,9 +884,10 @@
         window.openAnswerModal = openAnswerModal;
         window.closeAnswerModal = closeAnswerModal;
         window.submitAnswer = submitAnswer;
-        window.clearCurse = clearCurse; // Missing in export previously
+        window.clearCurse = clearCurse;
         window.closeModal = closeModal;
         window.finishOverflow = window.finishOverflow;
+        window.confirmAnswer = window.confirmAnswer;
     </script>
 </body>
 </html>
