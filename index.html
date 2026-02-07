@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leuven Hide & Seek</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #1a1a1a; color: #f3f4f6; }
@@ -30,9 +29,10 @@
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">Lobby Code</label>
-                <input type="text" id="lobbycode" class="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:border-yellow-400 outline-none uppercase" placeholder="Bijv. LEUVEN1">
+                <input type="text" id="lobbycode" class="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:border-yellow-400 outline-none uppercase" placeholder="Verzin een code (bv. TEST)">
+                <p class="text-xs text-gray-500 mt-1">Vul eender welke code in. Iedereen met deze code komt in hetzelfde spel.</p>
             </div>
-            <button onclick="joinLobby()" class="w-full btn-primary p-3 rounded-lg hover:bg-yellow-500 transition">
+            <button id="join-btn" onclick="joinLobby()" class="w-full btn-primary p-3 rounded-lg hover:bg-yellow-500 transition">
                 JOIN GAME
             </button>
         </div>
@@ -132,12 +132,11 @@
 
     <!-- FIREBASE & LOGIC -->
     <script type="module">
-        // We gebruiken de web-versies (URL imports) zodat dit werkt zonder build-step in de browser/Vercel
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, get, onValue, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // --- FIREBASE CONFIGURATIE (Jetlag Leuven) ---
+        // --- JOUW SPECIFIEKE CONFIGURATIE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCP1yVG3ssEyOub_F6P__90G1bM13kDaz0",
             authDomain: "jetlagleuven.firebaseapp.com",
@@ -147,11 +146,53 @@
             messagingSenderId: "461047598360",
             appId: "1:461047598360:web:34dfbfa265e3004ceb626d"
         };
-        // ----------------------------------------
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
+
+        // --- HARDCODED DATA (Geen CSV meer nodig) ---
+        const GAME_DATA = {
+            questions: [
+                {id:1, niveau:1, categorie:"Locatie", vraag:"Bevinden jullie je ten Noorden of ten Zuiden van de Bosstraat?"},
+                {id:2, niveau:1, categorie:"Omgeving", vraag:"Is de ondergrond waar jullie staan bestraat (kasseien/tegels) of onverhard?"},
+                {id:3, niveau:1, categorie:"Omgeving", vraag:"Horen jullie op dit moment het geluid van stromend water (de Maas)?"},
+                {id:4, niveau:1, categorie:"Omgeving", vraag:"Zien jullie op dit moment een bus van De Lijn passeren?"},
+                {id:5, niveau:1, categorie:"Omgeving", vraag:"Staan jullie onder een afdak/beschutting of in de open lucht?"},
+                {id:6, niveau:1, categorie:"Locatie", vraag:"Is de straatnaam waar jullie zijn langer dan 8 letters?"},
+                {id:7, niveau:1, categorie:"Visueel", vraag:"Kunnen jullie een kerktoren zien vanaf jullie plek?"},
+                {id:8, niveau:1, categorie:"Omgeving", vraag:"Is het huisnummer van het dichtstbijzijnde gebouw even of oneven?"},
+                {id:9, niveau:1, categorie:"Locatie", vraag:"Bevinden jullie je binnen de groene ring (Singels/Wallen)?"},
+                {id:10, niveau:1, categorie:"Omgeving", vraag:"Zijn er meer dan 5 andere mensen zichtbaar in een straal van 20 meter?"},
+                {id:26, niveau:2, categorie:"Locatie", vraag:"Zijn jullie dichter bij de Maasbrug dan bij de Markt?"},
+                {id:27, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de ondergrond (alleen jullie voeten en de grond)."},
+                {id:28, niveau:2, categorie:"Puzzel", vraag:"Wat is de eerste letter van de straat waar jullie zijn?"},
+                {id:29, niveau:2, categorie:"Foto", vraag:"Stuur een foto van de lucht recht boven jullie."},
+                {id:30, niveau:2, categorie:"Locatie", vraag:"Zijn jullie in een park of op de wallen?"},
+                {id:31, niveau:2, categorie:"Foto", vraag:"Stuur een foto van het dichtstbijzijnde verkeersbord (zonder straatnaam)."},
+                {id:32, niveau:2, categorie:"Omgeving", vraag:"Is er een horecazaak (café/restaurant) zichtbaar met een terras?"},
+                {id:51, niveau:3, categorie:"Risico", vraag:"Stuur een foto van het uitzicht op ooghoogte (zonder jullie zelf)."},
+                {id:52, niveau:3, categorie:"Risico", vraag:"Stuur een geluidsopname van 15 seconden van de omgeving."},
+                {id:53, niveau:3, categorie:"Risico", vraag:"Geef de naam van de dichtstbijzijnde winkel, café of openbaar gebouw."},
+                {id:54, niveau:3, categorie:"Risico", vraag:"Loop naar de dichtstbijzijnde hoek en stuur een foto van wat je daar ziet."},
+                {id:55, niveau:3, categorie:"Risico", vraag:"Zijn jullie binnen een straal van 150m van het standbeeld van Van Eyck?"}
+                // (Je kunt hier meer vragen toevoegen door {id:X, ...} te kopiëren)
+            ],
+            deck: [
+                {id:1, type:"Tijd", naam:"+5 Min Bonus", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:2, type:"Tijd", naam:"+5 Min Bonus", effect:"Eindtijd + 5 minuten.", taak:"Geen taak."},
+                {id:3, type:"Tijd", naam:"+10 Min Bonus", effect:"Eindtijd + 10 minuten.", taak:"Geen taak."},
+                {id:4, type:"Tijd", naam:"+15 Min Bonus", effect:"Eindtijd + 15 minuten.", taak:"Geen taak."},
+                {id:11, type:"Vloek", naam:"Freeze (2 min)", effect:"Zoekers moeten direct 2 minuten stilstaan.", taak:"Maak een selfie met een standbeeld (of paal)."},
+                {id:12, type:"Vloek", naam:"De Snack Pauze", effect:"Zoekers moeten een snack kopen/eten.", taak:"Overtuig een vreemde om te zwaaien."},
+                {id:13, type:"Vloek", naam:"Achteruit", effect:"Zoekers moeten de volgende straat achteruit lopen.", taak:"Film 30 sec moonwalken."},
+                {id:26, type:"Vloek", naam:"Geen Maps", effect:"Zoekers: 5 min geen Google Maps.", taak:"Teken een portret van elkaar in 30 sec."},
+                {id:37, type:"Vloek", naam:"De Mol", effect:"Zoekers delen 5 min live locatie.", taak:"Zoek een foto van een mol op Google."},
+                {id:56, type:"Bonus", naam:"Locatie Wissel", effect:"Hiders verplaatsen zich 5 min (rennend).", taak:"Roep \"WIJ ZIJN BANG\"."},
+                {id:69, type:"Bonus", naam:"Stealth Modus", effect:"10 min geen vragen.", taak:"Fluister 1 minuut lang."}
+                // (Je kunt hier meer kaarten toevoegen)
+            ]
+        };
 
         let currentUser = null;
         let currentLobby = null;
@@ -159,59 +200,63 @@
         let allQuestions = [];
         let allCards = [];
 
-        // --- CSV LOADING ---
-        async function loadCSVData() {
-            try {
-                const qRes = await fetch('vragen.csv');
-                const qText = await qRes.text();
-                const qData = Papa.parse(qText, {header: true}).data;
-                
-                const cRes = await fetch('kaarten.csv');
-                const cText = await cRes.text();
-                const cData = Papa.parse(cText, {header: true}).data;
-
-                return { questions: qData, cards: cData };
-            } catch (e) {
-                alert("Kan CSV niet laden. Zorg dat vragen.csv en kaarten.csv in de map staan.");
-                return null;
-            }
-        }
-
         // --- AUTH & LOBBY ---
         window.joinLobby = async () => {
+            const btn = document.getElementById('join-btn');
+            btn.innerText = "Laden...";
+            btn.disabled = true;
+
             const name = document.getElementById('username').value;
             const lobby = document.getElementById('lobbycode').value.toUpperCase();
-            if(!name || !lobby) return alert("Vul naam en lobby in");
-
-            await signInAnonymously(auth);
-            currentUser = { uid: auth.currentUser.uid, name: name };
-            currentLobby = lobby;
-
-            document.getElementById('display-lobby').innerText = lobby;
-            document.getElementById('display-user').innerText = name;
-
-            // Check if lobby exists, if not, init with CSV data
-            const lobbyRef = ref(db, `lobbies/${lobby}`);
-            const snapshot = await get(lobbyRef);
-
-            if (!snapshot.exists()) {
-                const data = await loadCSVData();
-                if(data) {
-                    // Initialize clean game state
-                    await set(lobbyRef, {
-                        created: serverTimestamp(),
-                        questions: data.questions.filter(q => q.id), // Clean empty rows
-                        deck: data.cards.filter(c => c.id),
-                        logs: { "init": { msg: "Lobby aangemaakt", time: Date.now() } }
-                    });
-                }
+            
+            if(!name || !lobby) {
+                btn.innerText = "JOIN GAME";
+                btn.disabled = false;
+                return alert("Vul naam en lobby in");
             }
 
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('role-screen').classList.remove('hidden');
-            
-            // Start listening to data
-            listenToGame();
+            try {
+                // Log in bij Firebase
+                await signInAnonymously(auth);
+                
+                currentUser = { uid: auth.currentUser.uid, name: name };
+                currentLobby = lobby;
+
+                document.getElementById('display-lobby').innerText = lobby;
+                document.getElementById('display-user').innerText = name;
+
+                // Check of lobby bestaat, zoniet, maak aan met embedded data
+                const lobbyRef = ref(db, `lobbies/${lobby}`);
+                const snapshot = await get(lobbyRef);
+
+                if (!snapshot.exists()) {
+                    // Lobby bestaat niet, maak aan!
+                    await set(lobbyRef, {
+                        created: serverTimestamp(),
+                        questions: GAME_DATA.questions,
+                        deck: GAME_DATA.deck,
+                        logs: { "init": { msg: `Lobby ${lobby} aangemaakt door ${name}`, time: Date.now() } }
+                    });
+                } else {
+                    // Voeg join log toe
+                    push(ref(db, `lobbies/${lobby}/logs`), {
+                        msg: `${name} is het spel binnengekomen.`,
+                        time: Date.now()
+                    });
+                }
+
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('role-screen').classList.remove('hidden');
+                
+                // Start luisteren naar updates
+                listenToGame();
+
+            } catch (error) {
+                console.error("Login failed", error);
+                alert("Er ging iets mis bij het verbinden. Controleer je internet.");
+                btn.innerText = "JOIN GAME";
+                btn.disabled = false;
+            }
         };
 
         window.selectRole = (role) => {
@@ -226,7 +271,7 @@
             if(role === 'hider') document.getElementById('hider-view').classList.remove('hidden');
             if(role === 'seeker') {
                 document.getElementById('seeker-view').classList.remove('hidden');
-                filterQuestions(1); // Default view
+                filterQuestions(1); 
             }
         };
 
@@ -247,14 +292,12 @@
         }
 
         function updateUI(data) {
-            // Update Questions (Seeker View)
+            // Update Vragenlijst (alleen als zoeker actief is)
             if(myRole === 'seeker') {
-                // Re-render current filter is handled by user click, but we refresh list if needed
-                // For simplicity, we just keep current state or refresh active filter
-                // We'll stick to manual refresh or just dynamic
-                const activeBtn = document.querySelector('#seeker-view button:focus') || {innerText: "Niveau 1"}; 
-                // Simple logic: If list is empty or updated, refresh based on last click? 
-                // Let's just update the list based on current active filter logic
+               // We verversen de lijst alleen als er interactie is, of laten het live updaten
+               // Voor simpelheid roepen we de huidige filter opnieuw aan als we al in een view zitten
+               const activeFilter = document.querySelector('#seeker-view button.ring-2'); // Simpele check
+               if(!activeFilter) filterQuestions(1); // Default
             }
 
             // Update Hand (Hider View)
@@ -295,18 +338,27 @@
             const list = document.getElementById('questions-list');
             list.innerHTML = "";
             
-            // Only show unused questions
+            // Visual feedback buttons
+            const btns = document.querySelectorAll('#seeker-view button');
+            btns.forEach(b => b.classList.remove('ring-2', 'ring-white'));
+            btns[level-1].classList.add('ring-2', 'ring-white');
+
             const filtered = allQuestions.filter(q => q.niveau == level && !q.used);
             
+            if(filtered.length === 0) {
+                list.innerHTML = `<div class="text-gray-500 text-center italic mt-4">Geen vragen meer in dit niveau.</div>`;
+                return;
+            }
+
             filtered.forEach(q => {
                 const div = document.createElement('div');
-                div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400";
+                div.className = "bg-gray-700 p-3 rounded border border-gray-600 cursor-pointer hover:border-blue-400 transition";
                 div.onclick = () => askQuestion(q.id);
                 div.innerHTML = `
                     <div class="text-sm font-bold text-gray-200">${q.vraag}</div>
                     <div class="flex justify-between mt-2 text-xs text-gray-400">
                         <span>${q.categorie}</span>
-                        <span class="text-blue-300">Stel Vraag ></span>
+                        <span class="text-blue-300 font-bold">Stel Vraag ></span>
                     </div>
                 `;
                 list.appendChild(div);
@@ -315,15 +367,11 @@
 
         window.askQuestion = (qid) => {
             if(!confirm("Wil je deze vraag stellen? Dit kan niet ongedaan gemaakt worden.")) return;
-            
-            // Find index
             const index = allQuestions.findIndex(q => q.id == qid);
             if(index === -1) return;
 
-            // Update Firebase
             update(ref(db, `lobbies/${currentLobby}/questions/${index}`), { used: true });
             
-            // Add Log
             push(ref(db, `lobbies/${currentLobby}/logs`), {
                 msg: `${currentUser.name} stelde vraag: ${allQuestions[index].vraag}`,
                 time: Date.now()
@@ -332,27 +380,24 @@
 
         // Hider Actions
         window.drawCards = (amount) => {
-            // Check hand limit locally first
             const handCount = allCards.filter(c => c.status === 'hand').length;
             if(handCount >= 5) return alert("Je hand zit vol (Max 5)! Speel of gooi eerst kaarten weg.");
 
-            // Get available deck
-            const deck = allCards.filter(c => !c.status || c.status === 'deck'); // items without status are deck
+            const deck = allCards.filter(c => !c.status || c.status === 'deck');
             if(deck.length < amount) return alert("Kaarten zijn op!");
 
-            // Random selection logic
             const selection = [];
+            let tempDeck = [...deck];
+            
             for(let i=0; i<amount; i++) {
-                const r = Math.floor(Math.random() * deck.length);
-                selection.push(deck[r]);
-                deck.splice(r, 1); // prevent picking same
+                const r = Math.floor(Math.random() * tempDeck.length);
+                selection.push(tempDeck[r]);
+                tempDeck.splice(r, 1);
             }
 
             if(amount === 1) {
-                // Auto add to hand
                 addToHand(selection[0].id);
             } else {
-                // Show modal to choose
                 showSelectionModal(selection);
             }
         };
@@ -373,7 +418,6 @@
                 `;
                 container.appendChild(div);
             });
-            
             modal.classList.remove('hidden');
         }
 
@@ -406,7 +450,6 @@
             update(ref(db, `lobbies/${currentLobby}/deck/${index}`), { status: 'discarded' });
         };
 
-        // Utilities
         function updateLogs(logsObj) {
             const logDiv = document.getElementById('game-log');
             logDiv.innerHTML = "";
@@ -419,7 +462,7 @@
             });
         }
 
-        // Attach to window for HTML onClick
+        // Expose functions to HTML
         window.joinLobby = joinLobby;
         window.selectRole = selectRole;
         window.drawCards = drawCards;
