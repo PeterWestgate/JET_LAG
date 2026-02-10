@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Leuven Hunt - Risk & Reward</title>
+    <title>Leuven Hunt</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
@@ -265,83 +265,76 @@
             ],
             deck: [
                 // --- TIJD KAARTEN (BETAALMIDDEL) ---
-                {id: 100, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 101, type: "Tijd", val: 10, naam: "Bonus 10 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 102, type: "Tijd", val: 15, naam: "Bonus 15 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 103, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 104, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 105, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 106, type: "Tijd", val: 10, naam: "Bonus 10 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 107, type: "Tijd", val: 10, naam: "Bonus 10 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 108, type: "Tijd", val: 15, naam: "Bonus 15 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 109, type: "Tijd", val: 30, naam: "Bonus 30 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
-                {id: 110, type: "Tijd", val: 15, naam: "Bonus 15 min", effect: "Bewaar in je hand als krediet voor vloeken.", taak: "Geen taak"},
+                {id: 100, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 101, type: "Tijd", val: 10, naam: "Bonus 10 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 102, type: "Tijd", val: 15, naam: "Bonus 15 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 103, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 104, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 105, type: "Tijd", val: 5, naam: "Bonus 5 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 106, type: "Tijd", val: 10, naam: "Bonus 10 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 107, type: "Tijd", val: 10, naam: "Bonus 10 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 108, type: "Tijd", val: 15, naam: "Bonus 15 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 109, type: "Tijd", val: 30, naam: "Bonus 30 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
+                {id: 110, type: "Tijd", val: 15, naam: "Bonus 15 min", effect: "Bewaar in je hand als krediet voor vloeken of bonustijd op het einde van het spel.", taak: "Geen taak"},
 
                 // --- VLOEKEN (ACTIE VEREIST) ---
-                {id: 111, type: "Vloek", naam: "Alleen Fietsen (15 min)", effect: "Gedurende de komende 15 minuten moeten de zoekers fietsen.", taak: "Sta 3 minuten rug aan rug met ogen dicht."},
-                {id: 112, type: "Vloek", naam: "Alleen Lopen (15 min)", effect: "Gedurende de komende 15 minuten mogen de zoekers alleen lopen.", taak: "Zing 1 minuut lang hardop een liedje."},
-                {id: 113, type: "Vloek", naam: "Brug Tol", effect: "Zoekers moeten binnen 5 min een andere brug oversteken dan hun laatste.", taak: "Houd 30 seconden een 'brug' positie aan (plank)."},
-                {id: 114, type: "Vloek", naam: "Eenwieler", effect: "Elke zoeker moet 30 sec eenwieler rijden nadoen op straat (filmen).", taak: "Sta 1 minuut op één been."},
-                {id: 115, type: "Vloek", naam: "Geen Kaart! (10 min)", effect: "Zoekers mogen geen kaart bekijken. Navigatie uit het hoofd.", taak: "Houd gezamenlijk 100 seconden de adem in."},
-                {id: 116, type: "Vloek", naam: "Omweg Oude Markt", effect: "Zoekers moeten direct naar de Oude Markt reizen.", taak: "Stuur een foto van een object dat begint met 'O'."},
-                {id: 117, type: "Vloek", naam: "Oriëntatie (10 min)", effect: "Zoekers moeten navigeren zonder telefoon te gebruiken.", taak: "Draai 1 minuut langzaam rondjes op je plek."},
-                {id: 118, type: "Vloek", naam: "Selfie met Onbekende", effect: "Zoekers moeten binnen 10 min een selfie maken met een onbekende.", taak: "Trek 1 minuut een gek gezicht en film het."},
-                {id: 119, type: "Vloek", naam: "Tijdelijke Afleiding", effect: "Hiders bellen zoekers 1 minuut, zoekers moeten stilstaan.", taak: "Verkoop telefonisch een product zonder 'uhm' te zeggen."},
-                {id: 120, type: "Vloek", naam: "Veter Foltering", effect: "Eén zoeker moet veters losmaken en opnieuw strikken.", taak: "Wees 2 minuten volledig stil."},
-                {id: 121, type: "Vloek", naam: "Vind Straatkunst", effect: "Zoekers moeten binnen 10 min straatkunst vinden en foto sturen.", taak: "Bedenk een raadsel over je verstopplek."},
-                {id: 122, type: "Vloek", naam: "Verkeerde Afslag!", effect: "Zoekers moeten direct 200m teruglopen.", taak: "Loop 3 minuten achteruit in een cirkel."},
-                {id: 123, type: "Vloek", naam: "Zing een Lied", effect: "Zoekers moeten een lied over Leuven zingen.", taak: "Maak 1 minuut lang dierengeluiden."},
-                {id: 124, type: "Vloek", naam: "Zoeker Afleiden", effect: "Zoekers moeten de Macarena dansen.", taak: "Maak 1 minuut overdreven dansbewegingen."},
+                {id: 111, type: "Vloek", naam: "Alleen Fietsen (15 min)", effect: "Gedurende de komende 15 minuten moeten de zoekers alleen fietsen, niet wandelen.", taak: "Sta 3 minuten rug aan rug zonder het te doorbreken."},
+                {id: 112, type: "Vloek", naam: "Alleen Lopen (15 min)", effect: "Gedurende de komende 15 minuten mogen de zoekers alleen wandelen, niet fietsen.", taak: "Zing 1 minuut lang hardop een liedje."},
+                {id: 113, type: "Vloek", naam: "Brug Tol", effect: "Zoekers moeten een brug oversteken voordat ze een volgende vraag mogen stellen.", taak: "Houd 30 seconden een 'plank' positie aan (plank)."},
+                {id: 114, type: "Vloek", naam: "Eenwieler", effect: "Elke zoeker moet 20 rondjes binnen de 10 sec rond hun eigen as draaien.", taak: "Sta 1 minuut op één been."},
+                {id: 115, type: "Vloek", naam: "Geen Kaart! (10 min)", effect: "Zoekers mogen geen navigatieapps gebruiken. Navigatie uit het hoofd.", taak: "Houd gezamenlijk 100 seconden de adem in. bijvoorbeeld p1: 40sec en p2 60sec"},
+                {id: 116, type: "Vloek", naam: "Omweg Oude Markt", effect: "Zoekers moeten direct naar de Oude Markt reizen.", taak: "Stuur een foto van een object dat begint met 'V'."},
+                {id: 117, type: "Vloek", naam: "Oriëntatie (10 min)", effect: "Zoekers moeten navigeren zonder navigatieapps te gebruiken.", taak: "Draai allemaal tegelijk 2 minuten langzaam rondjes op je plek."},
+                {id: 118, type: "Vloek", naam: "Selfie met Onbekende", effect: "Zoekers moeten binnen een selfie maken met een onbekende.", taak: "Trek 1 minuut een gek gezicht en film het."},
+                {id: 119, type: "Vloek", naam: "Tijdelijke Afleiding", effect: "Hiders bellen zoekers 2 minuten lang, zoekers moeten stilstaan.", taak: "Verkoop telefonisch een product zonder 'uhm' te zeggen. anders mogen zoekers ophangen"},
+                {id: 120, type: "Vloek", naam: "Veter Foltering", effect: "Eén zoeker moet volledig zijn veters losmaken uit zijn schoen en opnieuw strikken.", taak: "Wees 5 minuten beide volledig stil. (niet spreken of lawaai maken)"},
+                {id: 121, type: "Vloek", naam: "Vind Straatkunst", effect: "Zoekers moeten straatkunst vinden en een foto sturen.", taak: "Bedenk een leuke raadsel over je verstopplek en stuur dewe door"},
+                {id: 122, type: "Vloek", naam: "Verkeerde Afslag!", effect: "Zoekers moeten direct 200m teruglopen (niet fietsen) van waar ze kwamen", taak: "Loop 3 minuten achteruit in een cirkel."},
+                {id: 123, type: "Vloek", naam: "Zing een Lied", effect: "Zoekers moeten een lied over Leuven zingen voor 2 min", taak: "Maak 1 minuut lang luid dierengeluiden."},
+                {id: 124, type: "Vloek", naam: "Zoeker Afleiden", effect: "Zoekers moeten de Macarena dansen voor 2 min", taak: "Maak 1 minuut overdreven dansbewegingen."},
                 {id: 125, type: "Vloek", naam: "Zoeker Vertraging", effect: "Zoekers moeten 2 minuten stilstaan.", taak: "Doe 1 minuut de maanlanding in slow motion na."},
-                {id: 126, type: "Vloek", naam: "De Toerist", effect: "Zoekers moeten bij elk kruispunt 5 sec naar gebouwen wijzen.", taak: "Doe 1 minuut lang alsof je een standbeeld bent."},
-                {id: 127, type: "Vloek", naam: "De Drieling", effect: "Zoekers moeten elkaars hand vasthouden (10 min).", taak: "Knuffel elkaar 1 minuut lang."},
-                {id: 128, type: "Vloek", naam: "De Kotmadam", effect: "Zoekers mogen 5 min niet praten, enkel zuchten.", taak: "Stuur audio waarin je 30 sec klaagt over de jeugd."},
-                {id: 129, type: "Vloek", naam: "Achteruitkijkspiegel", effect: "Zoekers moeten 50m achteruit lopen.", taak: "Zeg het alfabet achterstevoren op (film)."},
-                {id: 130, type: "Vloek", naam: "De VIP", effect: "Eén zoeker is VIP, anderen moeten continu 'Aan de kant!' roepen.", taak: "Buig 10 keer diep voor een onzichtbare koning."},
-                {id: 131, type: "Vloek", naam: "Rood Licht", effect: "Bij elke rode auto moeten zoekers 10 sec stilstaan.", taak: "Stuur foto van benen in de lucht."},
-                {id: 132, type: "Vloek", naam: "De Piraat", effect: "Eén zoeker moet 10 min één oog dichthouden.", taak: "Maak een piraten 'Arrr!' audiobericht."},
-                {id: 133, type: "Vloek", naam: "Vloer is Lava", effect: "Zoekers mogen 5 min niet op lijnen/voegen stappen.", taak: "Sta 2 minuten op één been."},
+                {id: 126, type: "Vloek", naam: "De Toerist", effect: "Zoekers moeten bij elk kruispunt 30 sec naar gebouwen wijzen. Voor de komende 5 min", taak: "Doe 1 minuut lang alsof je een standbeeld bent."},
+                {id: 127, type: "Vloek", naam: "Het Biertje", effect: "Zoekers moeten elkaars hand vasthouden (3 min).", taak: "Spreek iemand aan en vraag wat dat ze het lekkerste bier binden."},
+                {id: 128, type: "Vloek", naam: "De Kotmadam", effect: "Zoekers mogen 5 min niet praten, enkel zuchten.", taak: "Stuur audio waarin je 1 min  klaagt over de jeugd van tegenwoordig."},
+                {id: 129, type: "Vloek", naam: "Achteruitkijkspiegel", effect: "Zoekers moeten voor 3 min alleen achteruit lopen en mogen niet fietsen.", taak: "Zeg het alfabet achterstevoren op."},
+                {id: 130, type: "Vloek", naam: "De VIP", effect: "Eén zoeker is VIP, anderen moeten continu 'Pas op alstublieft, VIP!' roepen als ze iemand wandelend passeren.", taak: "Buig 10 keer diep voor een onzichtbare koning."},
+                {id: 131, type: "Vloek", naam: "Rood Licht", effect: "Bij elke rode auto moeten zoekers 10 sec stilstaan voor de rest van het spel. Stop de vloek en speel verder met deze regel.", taak: "Stuur foto van je benen in de lucht."},
+                {id: 132, type: "Vloek", naam: "De Piraat", effect: "Eén zoeker moet 10 min één oog dichthouden. Stop de vloek en speel verder met deze regel voor 10 min.", taak: "Maak een piraten 'Arrr!' audiobericht."},
+                
                 {id: 134, type: "Vloek", naam: "De Paparazzi", effect: "Zoekers moeten selfie maken met standbeeld.", taak: "Doe een fotoshoot (3 modelposes)."},
-                {id: 135, type: "Vloek", naam: "Linke Boel", effect: "Zoekers mogen 5 min alleen linksaf slaan.", taak: "Schud 1 minuut nee met je hoofd."},
+                {id: 135, type: "Vloek", naam: "Linke Boel", effect: "Zoekers moeten 10 min alleen linksaf slaan bij ieder kruispunt. Stop de vloek en speel verder met deze regel voor 10 min.", taak: "Schud 1 minuut nee met je hoofd. En zeg tegen je mede-verstopper hoe gemeen hij is."},
                 {id: 136, type: "Vloek", naam: "De Verteller", effect: "Zoekers moeten 3 min alles hardop beschrijven wat ze zien.", taak: "Verzin een gedicht van 4 regels over Leuven."},
                 {id: 137, type: "Vloek", naam: "High Five", effect: "Zoekers moeten een vreemde high-fiven.", taak: "Applaudisseer 1 minuut voor jezelf."},
 
                 // --- VLOEK-TIJD (KOST TIJD KAARTEN) ---
-                {id: 138, type: "Vloek-Tijd", req: 15, naam: "Pad Blokkeren", effect: "Blokkeer een straat voor 20 min.", taak: "Gooi 15 min aan tijdkaarten weg."},
-                {id: 139, type: "Vloek-Tijd", req: 15, naam: "Stille Zone", effect: "Zoekers mogen 15 min niet praten.", taak: "Gooi 15 min aan tijdkaarten weg."},
-                {id: 140, type: "Vloek-Tijd", req: 10, naam: "Vast bij Rood", effect: "Zoekers mogen alleen voetgangersstraten gebruiken (15 min).", taak: "Gooi 10 min aan tijdkaarten weg."},
-                {id: 141, type: "Vloek-Tijd", req: 10, naam: "Vraag Omleiding", effect: "Hiders negeren de huidige vraag.", taak: "Gooi 10 min aan tijdkaarten weg."},
+                {id: 138, type: "Vloek-Tijd", req: 15, naam: "Pad Blokkeren", effect: "Blokkeer een straat. De zoekers mogen niet meer over deze straat fietsen of deze straat oversteken", taak: "Gooi 15 min aan tijdkaarten weg."},
+                {id: 139, type: "Vloek-Tijd", req: 15, naam: "Stille Zone", effect: "Zoekers mogen 15 min niet praten tegen elkaar.", taak: "Gooi 15 min aan tijdkaarten weg."},
+                {id: 140, type: "Vloek-Tijd", req: 10, naam: "Vast bij Rood", effect: "Zoekers mogen alleen voetgangersstraten gebruiken waar geen auto's mogen rijden (15 min lang).", taak: "Gooi 10 min aan tijdkaarten weg."},
+                {id: 141, type: "Vloek-Tijd", req: 10, naam: "Vraag Omleiding", effect: "Hiders mogen de huidige vraag negeren en deze mag niet opnieuw gesteld worden.", taak: "Gooi 10 min aan tijdkaarten weg."},
                 {id: 142, type: "Vloek-Tijd", req: 10, naam: "Zoeker Verwarring", effect: "Stuur zoekers 5 min in willekeurige richting.", taak: "Gooi 10 min aan tijdkaarten weg."},
                 {id: 143, type: "Vloek-Tijd", req: 15, naam: "De Friet Stop", effect: "Zoekers moeten stoppen en iets kopen/eten.", taak: "Gooi 15 min aan tijdkaarten weg."},
                 {id: 144, type: "Vloek-Tijd", req: 10, naam: "Batterij Leeg", effect: "Zoekers telefoon op vliegtuigstand (5 min).", taak: "Gooi 10 min aan tijdkaarten weg."},
                 {id: 145, type: "Vloek-Tijd", req: 20, naam: "De Busrit", effect: "Zoekers moeten bus nemen voor 1 halte.", taak: "Gooi 20 min aan tijdkaarten weg."},
                 {id: 146, type: "Vloek-Tijd", req: 10, naam: "Schoenveter Sabotage", effect: "Zoekers: schoenen uit, 10m lopen, schoenen aan.", taak: "Gooi 10 min aan tijdkaarten weg."},
-                {id: 147, type: "Vloek-Tijd", req: 15, naam: "Grote Markt Reset", effect: "Zoekers moeten terug naar Grote Markt.", taak: "Gooi 15 min aan tijdkaarten weg."},
-                {id: 148, type: "Vloek-Tijd", req: 5, naam: "Stiltecoupé", effect: "Zoekers: 15 min niet praten.", taak: "Gooi 5 min aan tijdkaarten weg."},
-                {id: 149, type: "Vloek-Tijd", req: 10, naam: "De Paranoia", effect: "Hiders eisen locatie foto van zoekers.", taak: "Gooi 10 min aan tijdkaarten weg."},
-                {id: 150, type: "Vloek-Tijd", req: 5, naam: "Trappenloper", effect: "Zoekers moeten 5x trap op en af.", taak: "Gooi 5 min aan tijdkaarten weg."},
+                {id: 147, type: "Vloek-Tijd", req: 15, naam: "Grote Markt Reset", effect: "Zoekers moeten terug naar Grote Markt voordat ze een volgende vraag stellen.", taak: "Gooi 10 min aan tijdkaarten weg."},
+                
+                
+        
+                {id: 151, type: "Vloek-Tijd", req: 10, naam: "Vraag Omleiding", effect: "Hiders mogen de huidige vraag negeren en deze mag niet opnieuw gesteld worden.", taak: "Gooi 10 min aan tijdkaarten weg."},
 
                 // --- BONUSSEN (VOORDEEL HIDERS) ---
-                {id: 151, type: "Bonus", naam: "Herpositioneren", effect: "Verplaats max 2 minuten.", taak: "Meld start/stop in chat."},
-                {id: 152, type: "Bonus", naam: "Noodontsnapping", effect: "Direct verplaatsen (50m). Alleen als zoekers dichtbij zijn.", taak: "Meld gebruik in chat."},
-                {id: 153, type: "Bonus", naam: "Omgevingscamouflage", effect: "Stuur foto van hoofd zoeker ipv object.", taak: "Geen taak."},
-                {id: 154, type: "Bonus", naam: "Onzichtbaar", effect: "2 minuten pauze (geen vragen/actie).", taak: "Geen taak."},
-                {id: 155, type: "Bonus", naam: "Souvenir", effect: "Zoekers moeten souvenir kopen voor hiders.", taak: "Geen taak."},
-                {id: 156, type: "Bonus", naam: "Snelle Ontsnapping", effect: "Direct verplaatsen (200m).", taak: "Meld gebruik in chat."},
-                {id: 157, type: "Bonus", naam: "Stealth Modus", effect: "10 min geen vragen van zoekers.", taak: "Geen taak."},
-                {id: 158, type: "Bonus", naam: "Tijd Rekken", effect: "Zoekers wachten 5 min extra op antwoord.", taak: "Geen taak."},
-                {id: 159, type: "Bonus", naam: "Vraag Blok", effect: "Huidige vraag telt niet.", taak: "Geen taak."},
-                {id: 160, type: "Bonus", naam: "Weggooien & Trekken", effect: "Gooi 3 kaarten weg, trek nieuwe.", taak: "Geen taak."},
-                {id: 161, type: "Bonus", naam: "De Mol", effect: "Je mag liegen op de volgende Ja/Nee vraag.", taak: "Eet een lepel kaneel (film)."},
-                {id: 162, type: "Bonus", naam: "Schaduwloop", effect: "Verplaatsen TIJDENS antwoorden (2 min).", taak: "Doe 20 squats (film)."},
-                {id: 163, type: "Bonus", naam: "Wisseltruc", effect: "Hand weggooien (behalve deze), 3 nieuwe trekken.", taak: "Draai 10 rondjes en loop recht (film)."},
-                {id: 164, type: "Bonus", naam: "Camouflage", effect: "Stuur foto van schoen ipv gevraagd object.", taak: "Maak gezicht onherkenbaar en stuur selfie."},
-                {id: 165, type: "Bonus", naam: "De Spion", effect: "Zoekers moeten hun locatie screenshotten.", taak: "Zing Vlaamse klassieker luidkeels."},
-                {id: 166, type: "Bonus", naam: "Ping Pong", effect: "Zoekers moeten hun eigen vraag beantwoorden.", taak: "Steen-papier-schaar tegen lucht (film)."},
-                {id: 167, type: "Bonus", naam: "Safe House", effect: "Ga winkel/café binnen (10 min veilig).", taak: "Vraag vreemde hoe laat het is (film)."},
-                {id: 168, type: "Bonus", naam: "Vogelvlucht", effect: "Vrij bewegen zonder limiet (5 min).", taak: "Doe de vogeltjesdans (30 sec film)."},
-                {id: 169, type: "Bonus", naam: "Ruis op de Lijn", effect: "Antwoord in andere taal (Frans/Duits/Engels).", taak: "Spreek 1 minuut met zwaar accent."},
-                {id: 170, type: "Bonus", naam: "Kortsluiting", effect: "Zoekers: 5 min geen scherm (alleen audio).", taak: "Schoenen aan verkeerde voeten (5 min)."}
+              
+                {id: 152, type: "Bonus", naam: "Noodontsnapping", effect: "De hiders mogen zich verplaatsen naar een locatie max 50m van hun huidige verstopplaats).", taak: "Geen taak."},
+                {id: 153, type: "Bonus", naam: "Omgevingscamouflage", effect: "Stuur een foto van hoofd zoeker (Proefielfoto ofzo) als antwoord op een fotovraag.", taak: "Geen taak."},
+                
+                {id: 155, type: "Bonus", naam: "Souvenir", effect: "Zoekers moeten souvenir kopen?vinden voor de hiders.", taak: "Geen taak."},
+                {id: 156, type: "Bonus", naam: "Noodontsnapping", effect: "De hiders mogen zich verplaatsen naar een locatie max 50m van hun huidige verstopplaats).", taak: "Geen taak."},
+             {id: 157, type: "Bonus", naam: "Vraag Blok", effect: "De hiders mogen de huidige vraag antwoorden als (veto) en trekken toch hun kaart.", taak: "Geen taak."},
+                {id: 158, type: "Bonus", naam: "Vraag Blok", effect: "De hiders mogen de huidige vraag antwoorden als (veto) en trekken toch hun kaart.", taak: "Geen taak."},
+                {id: 159, type: "Bonus", naam: "Vraag Blok", effect: "De hiders mogen de huidige vraag antwoorden als (veto) en trekken toch hun kaart.", taak: "Geen taak."},
+              
+               
+    
             ]
         };
         
@@ -868,6 +861,7 @@
     </script>
 </body>
 </html>
+
 
 
 
