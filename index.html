@@ -483,11 +483,18 @@
                 onValue(ref(db, `lobbies/${state.lobby}`), (snap) => {
                     const data = snap.val();
                     if (!data) return;
+
+                    // Update de state, maar forceer reset van optionele velden als ze missen
                     Object.assign(state, data);
+                    
                     state.questions = data.questions || [];
                     state.deck = data.deck || [];
                     state.activeCurses = data.activeCurses || [];
                     state.logs = data.logs || [];
+                    
+                    // ESSENTIEEL: Als activeBonus niet in de data zit (dus null/verwijderd is), zet hem dan expliciet op null in de state
+                    state.activeBonus = data.activeBonus || null;
+
                     app.renderUI();
                 });
             },
@@ -882,6 +889,15 @@
                 update(ref(db, `lobbies/${state.lobby}`), updates);
             },
 
+            clearBonus() {
+                // Zet de waarde expliciet op null in de database
+                update(ref(db, `lobbies/${state.lobby}`), { activeBonus: null });
+                
+                // Voor de zekerheid lokaal ook direct verbergen (voor snellere UI feedback)
+                state.activeBonus = null;
+                app.renderUI();
+            },
+
             discardCard(id) {
                 if(!confirm("Weet je zeker dat je deze kaart weg wil gooien? (Als je dit doet om een vloek op te heffen, bevestig dit dan mondeling aan de zoekers).")) return;
                 const idx = state.deck.findIndex(c => c.id === id);
@@ -903,4 +919,5 @@
     </script>
 </body>
 </html>
+
 
