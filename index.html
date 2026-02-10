@@ -101,8 +101,11 @@
                     <button onclick="app.startHiding()" class="bg-yellow-500 text-black font-black py-3 px-6 rounded-xl shadow-lg">START VERSTOPTIJD (15m)</button>
                 </div>
                 <div id="hiding-timer-container" class="hidden mt-4">
-                    <div class="text-4xl font-mono font-black text-yellow-400" id="hiding-timer">15:00</div>
-                    <p class="text-xs text-gray-500 mt-2">Zoekers wachten...</p>
+                    <div class="text-4xl font-mono font-black text-yellow-400 mb-4" id="hiding-timer">15:00</div>
+                    <button onclick="app.stopHidingEarly()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg w-full mb-2">
+                        WIJ ZIJN KLAAR (START SPEL)
+                    </button>
+                    <p class="text-xs text-gray-500">Klik hierop om de zoektijd direct te starten.</p>
                 </div>
             </div>
 
@@ -121,7 +124,7 @@
 
             <div id="hider-panel" class="hidden card-base p-6 border-blue-500 border-2 bg-gradient-to-br from-blue-900/50 to-gray-800 text-center space-y-4 animate-pulse">
                 <h3 id="hp-question" class="text-xl font-bold text-white leading-tight">...</h3>
-                <div class="text-xs text-blue-300 font-mono">Trek <span id="hp-reward">...</span> Kaarten</div>
+                <div class="text-xs text-blue-300 font-mono">Trek <span id="hp-reward">...</span> kaarten en bewaar 1 in je hand</div>
                 <button onclick="app.hiderConfirmAnswer()" class="w-full bg-white text-blue-900 font-black p-4 rounded-xl shadow-lg">BEVESTIG & TREK KAARTEN</button>
             </div>
 
@@ -145,12 +148,25 @@
             <h2 class="text-4xl font-black text-white mb-2 uppercase tracking-tighter">VLOEK ACTIEF!</h2>
             <div id="active-curses-container" class="w-full space-y-4 max-w-sm mt-4"></div>
         </div>
+
+        <div id="overlay-bonus" class="hidden absolute inset-0 bg-yellow-900/95 z-[55] flex flex-col items-center justify-center p-6 text-center backdrop-blur">
+            <i class="fa-solid fa-star text-6xl text-yellow-400 mb-6 animate-bounce"></i>
+            <h2 class="text-3xl font-black text-white mb-2 uppercase tracking-tighter">BONUS GESPEELD!</h2>
+            <div id="bonus-content" class="bg-gray-800 p-4 rounded-xl border border-yellow-500 w-full max-w-sm mb-6">
+                <h3 id="bonus-title" class="font-bold text-yellow-400 text-xl">...</h3>
+                <p id="bonus-desc" class="text-gray-300 text-sm">...</p>
+            </div>
+            <button onclick="app.clearBonus()" class="bg-white text-yellow-900 font-black py-4 px-8 rounded-xl shadow-lg w-full max-w-xs">
+                OK, BEGREPEN
+            </button>
+        </div>
     </div>
 
     <div id="modal-pick" class="hidden fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-gray-800 w-full max-w-md rounded-2xl p-6 border border-yellow-500 flex flex-col shadow-2xl">
             <h3 class="text-center font-bold text-yellow-400 text-xl mb-1">KIES 1 KAART</h3>
-            <div id="pick-list" class="space-y-3 overflow-y-auto flex-1 pr-1 mt-4"></div>
+            <p class="text-center text-gray-400 text-xs mb-4">De andere kaarten worden weggegooid.</p>
+            <div id="pick-list" class="space-y-3 overflow-y-auto flex-1 pr-1 mt-2"></div>
         </div>
     </div>
 
@@ -310,7 +326,7 @@
                 {id:14, type:"Tijd", val:30, naam:"Bonus 30 min", effect:"Bewaar in je hand als krediet voor vloeken."},
                 {id:15, type:"Tijd", val:60, naam:"Bonus 1 uur", effect:"Bewaar in je hand als krediet voor vloeken."},
 
-                // Vloeken met Tijd-Betaling (Deels vervangen voor balans)
+                // Vloeken met Tijd-Betaling
                 {id:16, type:"Vloek", naam:"De Tolbrug", effect:"Zoekers geblokkeerd tot betaling.", taak:"Gooi tijdskaarten weg met totale waarde van minstens 15 min."},
                 {id:17, type:"Vloek", naam:"De Tolbrug", effect:"Zoekers geblokkeerd tot betaling.", taak:"Gooi tijdskaarten weg met totale waarde van minstens 15 min."},
                 {id:18, type:"Vloek", naam:"Tijdschuld (Klein)", effect:"Zoekers geblokkeerd.", taak:"Gooi tijdskaarten weg met totale waarde van minstens 5 min."},
@@ -394,6 +410,7 @@
             gameDuration: 90,
             penalty: 0,
             activeCurses: [],
+            activeBonus: null, // NEW: For showing popup to seekers
             logs: [],
             tempDrawnCard: null 
         };
@@ -427,6 +444,7 @@
                             penalty: 0,
                             gameStartTime: 0,
                             hidingStartTime: 0,
+                            activeBonus: null,
                             logs: [{msg: `Lobby ${lobby} gestart door ${name} (${duration} min)`, time: Date.now()}]
                         });
                     } else {
@@ -599,15 +617,14 @@
                         const q = state.questions.find(x => x.id === state.activeQ);
                         if(q) {
                             document.getElementById('hp-question').innerText = q.vraag;
-                            document.getElementById('hp-level').innerText = q.niveau;
-                            document.getElementById('hp-reward').innerText = q.niveau;
+                            document.getElementById('hp-reward').innerText = q.niveau; // Shows "Trek 2 kaarten..."
                         }
                     }
                 }
 
                 // Curses
                 document.getElementById('overlay-curse').classList.toggle('hidden', state.role !== 'seeker' || !hasCurses);
-                if(hasCurses) {
+                if(hasCurses && state.role === 'seeker') {
                     document.getElementById('active-curses-container').innerHTML = state.activeCurses.map((c, idx) => `
                         <div class="bg-gray-800 p-4 rounded-xl border border-red-500 text-left shadow-lg">
                             <h4 class="font-bold text-yellow-400 text-lg mt-2">${c.naam}</h4>
@@ -621,6 +638,14 @@
                         </div>
                     `).join('');
                 }
+
+                // Bonus Overlay (Seekers only)
+                const showBonus = state.activeBonus && state.role === 'seeker';
+                document.getElementById('overlay-bonus').classList.toggle('hidden', !showBonus);
+                if(showBonus) {
+                    document.getElementById('bonus-title').innerText = state.activeBonus.naam;
+                    document.getElementById('bonus-desc').innerText = state.activeBonus.effect;
+                }
             },
 
             startHiding() {
@@ -629,6 +654,17 @@
                     status: 'hiding',
                     hidingStartTime: serverTimestamp(),
                     logs: [...state.logs, {msg: "VERSTOPTIJD GESTART (15 min)", time: Date.now()}]
+                });
+            },
+
+            stopHidingEarly() {
+                if(!confirm("Zijn jullie klaar om het spel te starten? De tijd gaat nu in.")) return;
+                // Switch to active state and START game timer immediately
+                update(ref(db, `lobbies/${state.lobby}`), {
+                    status: 'active',
+                    gameStartTime: serverTimestamp(),
+                    hidingStartTime: 0, // Reset hiding timer visual
+                    logs: [...state.logs, {msg: "HIDERS KLAAR: SPEL START!", time: Date.now()}]
                 });
             },
 
@@ -700,6 +736,7 @@
                 updates[`activeQ`] = id;
                 updates[`timerStart`] = serverTimestamp();
                 
+                // If this is the FIRST question and timer hasn't started yet (e.g. natural flow)
                 if (state.gameStartTime === 0) {
                      updates[`gameStartTime`] = serverTimestamp();
                      updates[`logs`] = [...state.logs, {msg: "SPEL START! Timer loopt.", time: Date.now()}];
@@ -836,6 +873,10 @@
                     const newCurses = [...state.activeCurses, card];
                     updates['activeCurses'] = newCurses;
                 }
+
+                if (card.type === 'Bonus') {
+                    updates['activeBonus'] = card;
+                }
                 
                 updates['logs'] = [...state.logs, {msg: `HIDERS spelen: ${card.naam}`, time: Date.now()}];
                 update(ref(db, `lobbies/${state.lobby}`), updates);
@@ -848,10 +889,14 @@
             },
 
             clearCurse(arrIndex) {
-                if(!confirm("Bevestig: Hebben de hiders de taak succesvol afgerond (of genoeg tijdkaarten weggegooid)?")) return;
+                if(!confirm("Bevestig: Hebben de zoekers de vloek/taak succesvol afgerond?")) return;
                 const newCurses = state.activeCurses.filter((_, i) => i !== arrIndex);
                 const updates = { activeCurses: newCurses, logs: [...state.logs, {msg: `ZOEKERS: Vloek opgeheven!`, time: Date.now()}] };
                 update(ref(db, `lobbies/${state.lobby}`), updates);
+            },
+
+            clearBonus() {
+                update(ref(db, `lobbies/${state.lobby}`), { activeBonus: null });
             }
         };
         window.app = app;
