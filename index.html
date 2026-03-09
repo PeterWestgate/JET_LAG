@@ -364,6 +364,7 @@
 
         let timerInt = null;
         let mainTimerInt = null;
+        let hidingTimerInt = null;
 
         window.app = {
             async join() {
@@ -460,11 +461,12 @@
                 const isHiding = state.status === 'hiding';
                 const hasCurses = state.activeCurses.length > 0;
                 
-                // Status Bar
+                // Status Bar en Timers
                 const statusBar = document.getElementById('status-bar');
                 const answerTimer = document.getElementById('answer-timer');
                 
                 if (timerInt) clearInterval(timerInt);
+                if (hidingTimerInt) clearInterval(hidingTimerInt);
 
                 if (isAnswering) {
                     statusBar.classList.remove('hidden');
@@ -482,14 +484,6 @@
                             answerTimer.innerText = `${m}:${s.toString().padStart(2,'0')}`;
                         }
                     }, 1000);
-                } else if (isHiding) {
-                     statusBar.classList.remove('hidden');
-                     document.getElementById('status-text').innerText = "VERSTOPTIJD...";
-                     const elapsed = Date.now() - state.hidingStartTime;
-                     const remain = (15 * 60000) - elapsed;
-                     const m = Math.max(0, Math.floor(remain / 60000));
-                     const s = Math.max(0, Math.floor((remain % 60000) / 1000));
-                     answerTimer.innerText = `${m}:${s.toString().padStart(2,'0')}`;
                 } else {
                     statusBar.classList.add('hidden');
                 }
@@ -519,15 +513,31 @@
                      if(state.gameDuration) mainTimerEl.innerText = `${Math.floor(state.gameDuration/60)}:${(state.gameDuration%60).toString().padStart(2,'0')}:00`;
                 }
 
-                // Visibility Logic
+                // Visibility Logic & Hiding Timer
                 document.getElementById('hiding-phase-panel').classList.toggle('hidden', state.status !== 'hiding' && state.status !== 'idle');
-                if (isHiding) {
+                
+                if (isHiding && state.hidingStartTime > 0) {
                     document.getElementById('hider-start-btn-container').classList.add('hidden');
                     document.getElementById('hiding-timer-container').classList.remove('hidden');
-                    const remain = (15 * 60000) - (Date.now() - state.hidingStartTime);
-                    const m = Math.max(0, Math.floor(remain / 60000));
-                    const s = Math.max(0, Math.floor((remain % 60000) / 1000));
-                    document.getElementById('hiding-timer').innerText = `${m}:${s.toString().padStart(2,'0')}`;
+                    
+                    statusBar.classList.remove('hidden');
+                    document.getElementById('status-text').innerText = "VERSTOPTIJD...";
+
+                    hidingTimerInt = setInterval(() => {
+                        const elapsed = Date.now() - state.hidingStartTime;
+                        const remain = (15 * 60000) - elapsed;
+                        
+                        if (remain <= 0) {
+                            document.getElementById('hiding-timer').innerText = "00:00";
+                            answerTimer.innerText = "00:00";
+                        } else {
+                            const m = Math.max(0, Math.floor(remain / 60000));
+                            const s = Math.max(0, Math.floor((remain % 60000) / 1000));
+                            const timeString = `${m}:${s.toString().padStart(2,'0')}`;
+                            document.getElementById('hiding-timer').innerText = timeString;
+                            answerTimer.innerText = timeString;
+                        }
+                    }, 1000);
                 }
 
                 // Seeker UI
@@ -622,8 +632,7 @@
                 });
             },
 
-           renderQuestions(lvl) {
-                // UI Toggle voor de knoppen bovenaan
+          renderQuestions(lvl) {
                 [1,2,3].forEach(i => {
                     const btn = document.getElementById(`btn-lvl-${i}`);
                     if(i===lvl) {
@@ -637,6 +646,57 @@
 
                 const list = document.getElementById('question-list-container');
                 list.innerHTML = "";
+                
+                const allLevelQuestions = state.questions.filter(q => q.niveau === lvl);
+                
+                if (allLevelQuestions.length === 0) {
+                    list.innerHTML = `<div class="text-center text-gray-500 italic mt-8 bg-gray-800/50 p-4 rounded-xl">Geen vragen gevonden voor dit niveau!</div>`;
+                    return;
+                }
+
+                const unusedQs = allLevelQuestions.filter(q => !q.used);
+                const usedQs = allLevelQuestions.filter(q => q.used);
+
+                const groups = {};
+                unusedQs.forEach(q => {
+                    if(!groups[q.categorie]) groups[q.categorie] = [];
+                    groups[q.categorie].push(q);
+                });
+
+                for (const [cat, qs] of Object.entries(groups)) {
+                    let icon = 'fa-tag';
+                    if(cat === 'Locatie') icon = 'fa-map-pin';
+                    if(cat === 'Omgeving') icon = 'fa-tree';
+                    if(cat === 'Visueel') icon = 'fa-eye';
+                    if(cat === 'Risico') icon = 'fa-skull';
+                    if(cat === 'Foto') icon = 'fa-camera';
+                    if(cat === 'Puzzel') icon = 'fa-puzzle-piece';
+
+                    const html = `
+                        <div class="cat-header"><i class="fa-solid ${icon}"></i> ${cat}</div>
+                        ${qs.map(q => `
+                            <button onclick="app.askQuestion(${q.id})" class="w-full text-left bg-gray-800 p-4 rounded-lg border border-gray-700 hover:bg-gray-750 hover:border-blue-500 active:scale-[0.99] transition mb-2 shadow-sm group">
+                                <div class="text-sm font-bold text-gray-200 group-hover:text-white">${q.vraag}</div>
+                                <div class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider group-hover:text-blue-400">Klik om te vragen</div>
+                            </button>
+                        `).join('')}
+                    `;
+                    list.innerHTML += html;
+                }
+
+                if (usedQs.length > 0) {
+                    const usedHtml = `
+                        <div class="cat-header !border-red-500 !text-red-500 mt-8"><i class="fa-solid fa-ban"></i> AL GESTELD (Niet meer bruikbaar)</div>
+                        ${usedQs.map(q => `
+                            <div class="w-full text-left bg-red-900/20 p-4 rounded-lg border border-red-900/50 mb-2 shadow-sm opacity-60">
+                                <div class="text-sm font-bold text-red-400 line-through">${q.vraag}</div>
+                                <div class="text-[10px] text-red-500/70 mt-1 uppercase tracking-wider">Reeds gesteld</div>
+                            </div>
+                        `).join('')}
+                    `;
+                    list.innerHTML += usedHtml;
+                }
+            },
                 
                 // Haal ALLE vragen van dit niveau op (zowel gebruikt als ongebruikt)
                 const allLevelQuestions = state.questions.filter(q => q.niveau === lvl);
@@ -886,6 +946,7 @@
     </script>
 </body>
 </html>
+
 
 
 
