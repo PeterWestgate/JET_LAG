@@ -540,9 +540,12 @@
                     }, 1000);
                 }
 
-                // Seeker UI
+               // Seeker UI
                 document.getElementById('seeker-panel').classList.toggle('hidden', state.role !== 'seeker');
                 if(state.role === 'seeker') {
+                     // Deze nieuwe regel herlaadt de vragenlijst direct zodat gestelde vragen naar beneden vallen
+                     app.renderQuestions(app.currentLevel || 1);
+
                      const btns = document.querySelectorAll('#question-list-container button');
                      const disabled = isAnswering || isHiding;
                      btns.forEach(b => {
@@ -632,7 +635,10 @@
                 });
             },
 
-          renderQuestions(lvl) {
+         renderQuestions(lvl) {
+                // Onthoud het huidige niveau zodat renderUI deze live kan herladen
+                app.currentLevel = lvl;
+
                 [1,2,3].forEach(i => {
                     const btn = document.getElementById(`btn-lvl-${i}`);
                     if(i===lvl) {
@@ -946,6 +952,7 @@
     </script>
 </body>
 </html>
+
 
 
 
