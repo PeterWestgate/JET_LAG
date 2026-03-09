@@ -622,8 +622,8 @@
                 });
             },
 
-            renderQuestions(lvl) {
-                // UI Toggle
+           renderQuestions(lvl) {
+                // UI Toggle voor de knoppen bovenaan
                 [1,2,3].forEach(i => {
                     const btn = document.getElementById(`btn-lvl-${i}`);
                     if(i===lvl) {
@@ -638,15 +638,21 @@
                 const list = document.getElementById('question-list-container');
                 list.innerHTML = "";
                 
-                const filtered = state.questions.filter(q => q.niveau === lvl && !q.used);
+                // Haal ALLE vragen van dit niveau op (zowel gebruikt als ongebruikt)
+                const allLevelQuestions = state.questions.filter(q => q.niveau === lvl);
                 
-                if (filtered.length === 0) {
-                    list.innerHTML = `<div class="text-center text-gray-500 italic mt-8 bg-gray-800/50 p-4 rounded-xl">Alle vragen van dit niveau zijn gesteld!</div>`;
+                if (allLevelQuestions.length === 0) {
+                    list.innerHTML = `<div class="text-center text-gray-500 italic mt-8 bg-gray-800/50 p-4 rounded-xl">Geen vragen gevonden voor dit niveau!</div>`;
                     return;
                 }
 
+                // Splits ze op in ongebruikt en gebruikt
+                const unusedQs = allLevelQuestions.filter(q => !q.used);
+                const usedQs = allLevelQuestions.filter(q => q.used);
+
+                // --- DEEL 1: ONGEBRUIKTE VRAGEN (Groeperen per categorie) ---
                 const groups = {};
-                filtered.forEach(q => {
+                unusedQs.forEach(q => {
                     if(!groups[q.categorie]) groups[q.categorie] = [];
                     groups[q.categorie].push(q);
                 });
@@ -670,6 +676,20 @@
                         `).join('')}
                     `;
                     list.innerHTML += html;
+                }
+
+                // --- DEEL 2: GESTELDE VRAGEN (Rood en onderaan) ---
+                if (usedQs.length > 0) {
+                    const usedHtml = `
+                        <div class="cat-header !border-red-500 !text-red-500 mt-8"><i class="fa-solid fa-ban"></i> AL GESTELD (Niet meer bruikbaar)</div>
+                        ${usedQs.map(q => `
+                            <div class="w-full text-left bg-red-900/20 p-4 rounded-lg border border-red-900/50 mb-2 shadow-sm opacity-60">
+                                <div class="text-sm font-bold text-red-400 line-through">${q.vraag}</div>
+                                <div class="text-[10px] text-red-500/70 mt-1 uppercase tracking-wider">Reeds gesteld</div>
+                            </div>
+                        `).join('')}
+                    `;
+                    list.innerHTML += usedHtml;
                 }
             },
 
@@ -866,6 +886,7 @@
     </script>
 </body>
 </html>
+
 
 
 
