@@ -635,7 +635,7 @@
                 });
             },
 
-         renderQuestions(lvl) {
+        renderQuestions(lvl) {
                 // Onthoud het huidige niveau zodat renderUI deze live kan herladen
                 app.currentLevel = lvl;
 
@@ -690,61 +690,6 @@
                     list.innerHTML += html;
                 }
 
-                if (usedQs.length > 0) {
-                    const usedHtml = `
-                        <div class="cat-header !border-red-500 !text-red-500 mt-8"><i class="fa-solid fa-ban"></i> AL GESTELD (Niet meer bruikbaar)</div>
-                        ${usedQs.map(q => `
-                            <div class="w-full text-left bg-red-900/20 p-4 rounded-lg border border-red-900/50 mb-2 shadow-sm opacity-60">
-                                <div class="text-sm font-bold text-red-400 line-through">${q.vraag}</div>
-                                <div class="text-[10px] text-red-500/70 mt-1 uppercase tracking-wider">Reeds gesteld</div>
-                            </div>
-                        `).join('')}
-                    `;
-                    list.innerHTML += usedHtml;
-                }
-            },
-                
-                // Haal ALLE vragen van dit niveau op (zowel gebruikt als ongebruikt)
-                const allLevelQuestions = state.questions.filter(q => q.niveau === lvl);
-                
-                if (allLevelQuestions.length === 0) {
-                    list.innerHTML = `<div class="text-center text-gray-500 italic mt-8 bg-gray-800/50 p-4 rounded-xl">Geen vragen gevonden voor dit niveau!</div>`;
-                    return;
-                }
-
-                // Splits ze op in ongebruikt en gebruikt
-                const unusedQs = allLevelQuestions.filter(q => !q.used);
-                const usedQs = allLevelQuestions.filter(q => q.used);
-
-                // --- DEEL 1: ONGEBRUIKTE VRAGEN (Groeperen per categorie) ---
-                const groups = {};
-                unusedQs.forEach(q => {
-                    if(!groups[q.categorie]) groups[q.categorie] = [];
-                    groups[q.categorie].push(q);
-                });
-
-                for (const [cat, qs] of Object.entries(groups)) {
-                    let icon = 'fa-tag';
-                    if(cat === 'Locatie') icon = 'fa-map-pin';
-                    if(cat === 'Omgeving') icon = 'fa-tree';
-                    if(cat === 'Visueel') icon = 'fa-eye';
-                    if(cat === 'Risico') icon = 'fa-skull';
-                    if(cat === 'Foto') icon = 'fa-camera';
-                    if(cat === 'Puzzel') icon = 'fa-puzzle-piece';
-
-                    const html = `
-                        <div class="cat-header"><i class="fa-solid ${icon}"></i> ${cat}</div>
-                        ${qs.map(q => `
-                            <button onclick="app.askQuestion(${q.id})" class="w-full text-left bg-gray-800 p-4 rounded-lg border border-gray-700 hover:bg-gray-750 hover:border-blue-500 active:scale-[0.99] transition mb-2 shadow-sm group">
-                                <div class="text-sm font-bold text-gray-200 group-hover:text-white">${q.vraag}</div>
-                                <div class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider group-hover:text-blue-400">Klik om te vragen</div>
-                            </button>
-                        `).join('')}
-                    `;
-                    list.innerHTML += html;
-                }
-
-                // --- DEEL 2: GESTELDE VRAGEN (Rood en onderaan) ---
                 if (usedQs.length > 0) {
                     const usedHtml = `
                         <div class="cat-header !border-red-500 !text-red-500 mt-8"><i class="fa-solid fa-ban"></i> AL GESTELD (Niet meer bruikbaar)</div>
@@ -952,6 +897,7 @@
     </script>
 </body>
 </html>
+
 
 
 
